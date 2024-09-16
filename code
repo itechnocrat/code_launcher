@@ -2,17 +2,29 @@
 #
 # TODO: rename this script to starter or actuator with suffix a vscode or a code
 # Usage this script:
-# code profile path_to_workspace
-# where profile is a programming language or a stack or etc.
+# $ code profile
+# where profile is a programming language or a stack and etc.
 # Without specifying profile, the script runs Default profile
+
+# checking script arguments
+if [[ $# -gt 1 ]]; then
+  echo "For now, one argument is enough."
+  exit 1
+fi
+
+if [[ "$1" = "" ]]; then
+  PROFILE="Default"
+  echo -n "Warning: VSCode will run with the Default profile!"
+else
+  PROFILE="$1"
+fi
+
+WORKSPACE="."
+DEBUG="debug"
 
 CODE_WORK_DIR="/mnt/sda/sda2/code-insiders-data"
 CODE_WORK_DATA_DIR="$CODE_WORK_DIR/common"
 CODE_WORK_EXTENSIONS_DIR="$CODE_WORK_DIR/extensions"
-
-PROFILE="$1"
-WORKSPACE="."
-DEBUG="debug"
 
 # TODO: move this block to the launch area of the JS profile
 # export NODE_ENV=production
@@ -26,34 +38,21 @@ export DISABLE_ESLINT_PLUGIN=true
 
 # Минимальный обязательный набор расширений
 # Универсальных наборов расширений быть не должно, вместо этого предназначены комбинации из них:
-# 'set_of_extensions_for_base' - распустить и нужный минимум расширений включить в комбинацию Default
+# 'set_basic' - распустить и нужный минимум расширений включить в комбинацию Default
 
-declare -a set_of_extensions_for_base=(
-  alefragnani.project-manager # maybe move to utilities?
-  Tyriar.vscode-terminal-here # maybe move to utilities?
-  drmerfy.overtype # maybe move to utilities?
-  streetsidesoftware.code-spell-checker # maybe move to utilities?
-  streetsidesoftware.code-spell-checker-russian # maybe move to utilities?
-  EditorConfig.EditorConfig # maybe move to formatters?
-  richie5um2.vscode-sort-json # maybe move to utilities?
-  WakaTime.vscode-wakatime # maybe move to utilities?
-  robole.profile-status # maybe move to utilities?
-  natqe.reload # maybe move to utilities?
-  liviuschera.noctis        # maybe move to themes?
-  PKief.material-icon-theme # maybe move to themes?
-  # johnpapa.vscode-peacock # maybe move to themes?
-)
+declare -a set_basic=()
 
 # Languages
 
-declare -a set_of_extensions_for_pascal=(
+declare -a set_pascal=(
   # alefragnani.pascal
   Wosi.omnipascal
-  webfreak.debug
+  CNOC.fpdebug
+  #webfreak.debug #?
   coolchyni.beyond-debug
 )
 
-declare -a set_of_extensions_for_cpp=(
+declare -a set_cpp=(
   # ms-vscode.cpptools-extension-pack
   # consist of:
   # 1. C/C++ for Visual Studio Code:
@@ -66,14 +65,14 @@ declare -a set_of_extensions_for_cpp=(
   ms-vscode.cmake-tools
   # consist end.
   #
+  jeff-hykin.better-cpp-syntax
+  #
   # Project generator:
   ACharLuk.fenix
   # or
   danielpinto8zz6.c-cpp-project-generator
   #
   ms-vscode.makefile-tools
-  #
-  # jeff-hykin.better-cpp-syntax # move to 'set_of_extensions_themes_for_cpp'
 )
 
 declare -a set_of_extensions_for_html=(
@@ -158,16 +157,20 @@ declare -a set_of_extensions_for_python=(
   VisualStudioExptTeam.vscodeintellicode-completions
 )
 
-declare -a set_of_extensions_for_sql=(mtxr.sqltools mtxr.sqltools-driver-pg theumletteam.umlet)
+declare -a set_of_extensions_for_sql=(
+  mtxr.sqltools
+  mtxr.sqltools-driver-pg
+  theumletteam.umlet
+)
 
-declare -a set_of_extensions_for_java=(VisualStudioExptTeam.vscodeintellicode)
+declare -a set_java=(
+  VisualStudioExptTeam.vscodeintellicode
+)
 
 # Bash
 
 # https://habr.com/ru/articles/583320/
-# exiasr.hadolint вынес в набор для Docker
-declare -a set_of_extensions_for_bash=(
-  # This set must be included in the combination for Docker
+declare -a set_bash=(
   #timonwong.shellcheck
   #rogalmic.bash-debug
   #foxundermoon.shell-format
@@ -175,9 +178,9 @@ declare -a set_of_extensions_for_bash=(
   #tetradresearch.vscode-h2o
   meronz.manpages
   Remisa.shellman
-  #formulahendry.code-runner # maybe move to utilities?
-  # exiasr.hadolint
-  # jeff-hykin.better-dockerfile-syntax
+  # formulahendry.code-runner # already exists in utilities
+  # exiasr.hadolint # move to set_docker
+  # jeff-hykin.better-dockerfile-syntax # move to set_docker
   xshrim.txt-syntax
   jeff-hykin.better-shellscript-syntax
   # Switch to the Dark+ theme
@@ -213,7 +216,7 @@ declare -a set_of_extensions_for_haskell=(justusadam.language-haskell)
 
 # Tools
 
-declare -a set_of_extensions_for_docker=(
+declare -a set_docker=(
   ms-azuretools.vscode-docker
   jeff-hykin.better-dockerfile-syntax
   # Material Theme
@@ -245,17 +248,17 @@ declare -a set_of_extensions_for_git=(
   # GitHub.copilot
 )
 
-declare -a set_of_extensions_for_path_processing=(
+declare -a set_path_processing=(
   christian-kohler.path-intellisense
   ionutvmi.path-autocomplete
 )
 
 declare -a set_of_extensions_for_code_formatter=(
-  esbenp.prettier-vscode
-  tombonnike.vscode-status-bar-format-toggle
+  esbenp.prettier-vscode # move to JS
+  tombonnike.vscode-status-bar-format-toggle # move to JS
 )
 
-declare -a set_of_extensions_for_organizing_comments_todos_bookmarks=(
+declare -a set_organizing_comments_todos_bookmarks=(
   aaron-bond.better-comments
   Gruntfuggly.todo-tree
   alefragnani.Bookmarks
@@ -263,7 +266,10 @@ declare -a set_of_extensions_for_organizing_comments_todos_bookmarks=(
   # wayou.vscode-todo-highlight
 )
 
-declare -a set_of_extensions_for_code_documentation=(
+declare -a set_code_documentation=(
+  # PlantUML +
+  # mgiesen.image-comments
+  #
   # lllllllqw.jsdoc
   cschlosser.doxdocgen
 )
@@ -273,17 +279,17 @@ declare -a set_of_extensions_for_code_documentation=(
 declare -a set_of_extensions_for_vue=(Vue.volar)
 declare -a set_of_extensions_for_twig=(mblode.twig-language-2)
 
-# Formaters
+# Formatters
 
 # Doc Writer Profile Template
 # https://code.visualstudio.com/docs/editor/profiles#_doc-writer-profile-template
 
-declare -a set_of_extensions_for_markdown=(
+declare -a set_markdown=(
   yzhang.markdown-all-in-one
   DavidAnson.vscode-markdownlint
   bierner.markdown-mermaid
   # bierner.markdown-preview-github-styles
-  ChrisChinchilla.vscode-pandoc
+  # ChrisChinchilla.vscode-pandoc
   # shd101wyy.markdown-preview-enhanced
   # DougFinke.vscode-pandoc # deprecated
 )
@@ -307,7 +313,7 @@ declare -a set_of_extensions_for_arduino=(
 declare -a set_of_extensions_for_platformio=(
   ms-vscode.cpptools           #? здесь
   jeff-hykin.better-cpp-syntax #? оставить расширения
-  ms-vscode.cpptools-themes    #? только для platformio, а в combo этот сет объединить с сетом для c++
+  ms-vscode.cpptools-themes    #? только для platformio и в combo этот сет объединить с сетом для c++
   platformio.platformio-ide
 )
 
@@ -315,31 +321,42 @@ declare -a set_of_extensions_for_mcu=()
 declare -a set_of_extensions_for_io=()
 declare -a set_of_extensions_for_iot=()
 
+declare -a set_utilities=(
+  alefragnani.project-manager
+  Tyriar.vscode-terminal-here
+  drmerfy.overtype
+  formulahendry.code-runner
+  richie5um2.vscode-sort-json
+  robole.profile-status
+  natqe.reload
+  EditorConfig.EditorConfig
+)
+
+declare -a set_spelling=(
+  streetsidesoftware.code-spell-checker
+  streetsidesoftware.code-spell-checker-russian
+)
+
+# Special purpose extension
+
+declare -a set_special_extensions=(
+  WakaTime.vscode-wakatime
+)
+
 # Themes
 
-declare -a set_of_extensions_themes=(
-  arcticicestudio.nord-visual-studio-code
+declare -a set_themes=(
   teabyii.ayu
+  arcticicestudio.nord-visual-studio-code
   ahmadawais.shades-of-purple
+  # johnpapa.vscode-peacock
 )
-
-declare -a set_of_extensions_for_icons=(
-  # by download rating
-  PKief.material-icon-theme # the best and move to base
-  # vscode-icons-team.vscode-icons
-  # equinusocio.vsc-material-theme-icons
-)
-
-#declare -a set_of_extensions_utilities=(
-#  formulahendry.code-runner
-#)
 
 # Special purpose themes
-
-# See Semantic Colorization
+# See Semantic Colorization:
 # https://devblogs.microsoft.com/cppblog/visual-studio-code-c-c-extension-july-2019-update/#semantic-colorization
 
-declare -a set_of_extensions_themes_for_better_syntax=(
+declare -a set_better_syntax=(
   # jeff-hykin.xd-theme # optimized for syntax: C++, Dockerfile, Shell, Perl (JS JSX Rust Vue JSON Python Ruby HTML C# CoffeeScript CSS SASS YAML Markdown WASM Cython Toml)
   liviuschera.noctis # supports a lot of languages # the best and move to base
   # karyfoundation.theme-karyfoundation-themes
@@ -350,139 +367,153 @@ declare -a set_of_extensions_themes_for_better_syntax=(
   # peaceshi.syntax-highlight
 )
 
-declare -a set_of_extensions_themes_for_cpp=(
-  jeff-hykin.better-cpp-syntax
-  # Switch to the Dark+ theme
-  # or
-  # XD Theme
-  liviuschera.noctis # Noctis (my fovorite)
-  # Kary Pro Colors
-  # Material Theme
-  # One Monokai Theme
-  # Winteriscoming
-  # Popping and Locking
-  # Syntax Highlight Theme
-  # Default Theme Enhanced
+declare -a set_icons=(
+  # by download rating
+  PKief.material-icon-theme # the best
+  # vscode-icons-team.vscode-icons
+  # equinusocio.vsc-material-theme-icons
+  emmanuelbeziat.vscode-great-icons
 )
 
 # Combination of sets (combo)
 
-declare -a combination_of_sets_for_default=(
-  set_of_extensions_for_base
-  set_of_extensions_themes
+declare -a combo_default=(
+  #set_utilities
+  #set_themes
+  #set_icons
+)
+
+declare -a combo_bash=(
+  set_utilities
+  set_themes
+  set_icons
+  set_bash
+  set_spelling
+  set_path_processing
+  set_markdown
+  set_better_syntax
+  set_organizing_comments_todos_bookmarks
+  set_special_extensions
+)
+
+declare -a combo_pascal=(
+  set_utilities
+  set_themes
+  set_icons
+  set_pascal
+  set_path_processing
+  set_markdown
+  set_better_syntax
+  set_organizing_comments_todos_bookmarks
+  set_special_extensions
+)
+
+declare -a combo_cpp=(
+  set_utilities
+  set_themes
+  set_icons
+  set_cpp
+  set_spelling
+  set_path_processing
+  set_markdown
+  set_better_syntax
+  set_organizing_comments_todos_bookmarks
+  set_special_extensions
 )
 
 declare -a combination_of_sets_for_markdown=(
-  set_of_extensions_for_base
-  #set_of_extensions_themes_for_better_syntax
-  set_of_extensions_for_markdown
-)
-
-declare -a combination_of_sets_for_pascal=(
-  set_of_extensions_for_base
-  # set_of_extensions_for_path_processing
-  set_of_extensions_for_organizing_comments_todos_bookmarks
-  # set_of_extensions_for_debuging
-  #set_of_extensions_themes_for_better_syntax
-  #set_of_extensions_for_icons
-  set_of_extensions_for_pascal
+  #set_better_syntax
+  set_markdown
 )
 
 declare -a combination_of_sets_for_html=(
-  set_of_extensions_for_base
   set_of_extensions_for_html
-  set_of_extensions_for_markdown
-  set_of_extensions_for_organizing_comments_todos_bookmarks
-  #set_of_extensions_themes_for_better_syntax
-  set_of_extensions_for_path_processing
+  set_markdown
+  set_organizing_comments_todos_bookmarks
+  #set_better_syntax
+  set_path_processing
   set_of_extensions_for_code_formatter
-  #set_of_extensions_for_icons
+  #set_icons
   set_of_extensions_for_css
 )
 
 declare -a combination_of_sets_for_js=(
-  set_of_extensions_for_base
-  set_of_extensions_for_path_processing
-  set_of_extensions_for_markdown
+  set_basic
+  set_path_processing
+  set_markdown
   set_of_extensions_for_remote
-  set_of_extensions_for_docker
+  set_docker
   set_of_extensions_for_js
   set_of_extensions_for_html
-  set_of_extensions_for_organizing_comments_todos_bookmarks
+  set_organizing_comments_todos_bookmarks
   set_of_extensions_for_code_formatter
-  #set_of_extensions_themes_for_better_syntax
-  #set_of_extensions_for_icons
+  #set_better_syntax
+  #set_icons
 )
 
 declare -a combination_of_sets_for_python=(
-  set_of_extensions_for_base
+  set_basic
   set_of_extensions_for_remote
-  set_of_extensions_for_docker
-  set_of_extensions_for_markdown
-  set_of_extensions_for_path_processing
+  set_docker
+  set_markdown
+  set_path_processing
   set_of_extensions_for_python
-  set_of_extensions_for_organizing_comments_todos_bookmarks
-  #set_of_extensions_themes_for_better_syntax
-  # set_of_extensions_for_code_documentation
+  set_organizing_comments_todos_bookmarks
+  #set_better_syntax
+  # set_code_documentation
 )
 
 declare -a combination_of_sets_for_php=()
 declare -a combination_of_sets_for_vue=()
-declare -a combination_of_sets_for_cpp=(
-  set_of_extensions_for_base
-  set_of_extensions_for_markdown
-  set_of_extensions_for_path_processing
-  set_of_extensions_for_cpp
-  set_of_extensions_for_organizing_comments_todos_bookmarks
-  set_of_extensions_for_code_documentation
-  set_of_extensions_themes_for_cpp
-  #set_of_extensions_themes_for_better_syntax
-)
+
 declare -a combination_of_sets_for_sql=(mtxr.sqltools)
 
 declare -a combination_of_sets_for_docker=()
 declare -a combination_of_sets_for_remote=()
 declare -a combination_of_sets_for_git=(
-  set_of_extensions_for_base
-  set_of_extensions_for_markdown
+  set_basic
+  set_markdown
   set_of_extensions_for_git
-  # set_of_extensions_for_path_processing
+  # set_path_processing
 )
 
 declare -a combination_of_sets_for_arduino=(
-  set_of_extensions_for_base
-  set_of_extensions_for_markdown
-  set_of_extensions_for_path_processing
+  set_basic
+  set_markdown
+  set_path_processing
   set_of_extensions_for_arduino
-  #set_of_extensions_themes_for_better_syntax
-  set_of_extensions_for_organizing_comments_todos_bookmarks
-  set_of_extensions_for_code_documentation
-  #set_of_extensions_for_icons
+  #set_better_syntax
+  set_organizing_comments_todos_bookmarks
+  set_code_documentation
+  #set_icons
 )
 
 declare -a combination_of_sets_for_platformio=(
-  set_of_extensions_for_base
-  set_of_extensions_for_markdown
-  set_of_extensions_for_path_processing
+  set_markdown
+  set_path_processing
   set_of_extensions_for_platformio
-  #set_of_extensions_themes_for_better_syntax
-  set_of_extensions_for_organizing_comments_todos_bookmarks
-  set_of_extensions_for_code_documentation
+  #set_better_syntax
+  set_organizing_comments_todos_bookmarks
+  set_code_documentation
 )
 
 declare -a combination_of_sets_for_haskell=(
-  set_of_extensions_for_base
-  set_of_extensions_for_markdown
+  set_basic
+  set_markdown
   set_of_extensions_for_haskell
 )
 
-declare -a combination_of_sets_for_bash=(
-  set_of_extensions_for_base
-  set_of_extensions_for_bash
-  set_of_extensions_for_path_processing
-  set_of_extensions_for_markdown
-  #set_of_extensions_themes_for_better_syntax
-  set_of_extensions_for_organizing_comments_todos_bookmarks
+declare -a combo_java=(
+  set_utilities
+  set_themes
+  set_icons
+  set_java
+  set_spelling
+  set_path_processing
+  set_markdown
+  set_better_syntax
+  set_organizing_comments_todos_bookmarks
+  set_special_extensions
 )
 
 # Associative array
@@ -490,43 +521,45 @@ declare -a combination_of_sets_for_bash=(
 # value as a name of a combination of extension sets
 # list_of_combinations=([profile]=combination_of_sets_for_profile ...)
 declare -A list_of_combinations=(
-  [Default]=combination_of_sets_for_default
+  [Default]=combo_default
   [markdown]=combination_of_sets_for_markdown
-  [pascal]=combination_of_sets_for_pascal
+  [pascal]=combo_pascal
   [html]=combination_of_sets_for_html
   [js]=combination_of_sets_for_js
   [python]=combination_of_sets_for_python
   [php]=combination_of_sets_for_php
   [vue]=combination_of_sets_for_vue
-  [cpp]=combination_of_sets_for_cpp
+  [cpp]=combo_cpp
   [sql]=combination_of_sets_for_sql
-  [bash]=combination_of_sets_for_bash
+  [bash]=combo_bash
   [docker]=combination_of_sets_for_docker
   [remote]=combination_of_sets_for_remote
   [git]=combination_of_sets_for_git
   [arduino]=combination_of_sets_for_arduino
   [platformio]=combination_of_sets_for_platformio
   [haskell]=combination_of_sets_for_haskell
-  [foo]=combination_of_sets_for_default
-  [bar]=combination_of_sets_for_default
+  [java]=combo_java
 )
 
-# Name:
-# profile_configuration_exists
+# Functions
+
+# Сhecks the existence of a profile.
 # Usage:
-# function
-# Input:
-# no
-# Output:
-# returns success code if the configuration exists
-function profile_configuration_exists {
-  for combination in "${!list_of_combinations[@]}"; do
-    if [[ $combination -eq "$PROFILE" ]];
+# function arg
+# Globals:
+#   list_of_combinations - associated array with key as combo name
+#   PROFILE - profile name
+# Arguments:
+#   arg - string as profile name
+# Returns:
+#   0 - profile configuration exists
+#   1 - profile configuration not exists
+function profile_is {
+  for combo in "${!list_of_combinations[@]}"; do
+    if [[ $combo -eq "$PROFILE" ]];
     then
-      # profile configuration exists
       return 0
     else
-  	  # profile configuration not exists
     	return 1
     fi
   done
@@ -539,7 +572,20 @@ function profile_configuration_exists {
 # no
 # Output:
 # result as reference to list of installed extensions
-function get_a_list_of_installed_extensions {
+
+# Merges combinations of extension sets into one list.
+# Usage:
+# function arg
+# Globals:
+#   list_of_combinations - list of extension set combinations
+#   PROFILE - profile name
+# Arguments:
+#   arg - array
+# Outputs:
+#   arg - array of extension names
+# Returns:
+#   0
+function get_list_installed_extensions {
   # echo $0
   local -n ref_to_list_of_installed_extensions=$1
   echo "${#ref_to_list_of_installed_extensions[@]}" 1>/dev/null
@@ -634,51 +680,42 @@ function create_a_list_of_parameters {
   done
 }
 
-# Name:
-# get_differences_between_two_lists
+# Calculate the difference between two lists.
 # Usage:
-# function argument1 argument2 relation result
-# Input:
-# argument1 as reference to list one
-# argument2 as reference to list second
-# Output:
-# returns relation a reference between two lists value
-# returns result a reference list of difference between two lists
-function get_differences_between_two_lists {
-  # list_one - list_second = difference
-  # Input
-  local -n ref_to_list_one=$1
-  local -n ref_to_list_second=$2
-  # Output
-  local -n ref_to_differences_list=$3
-  # Local
-  local match="no"
-  # list of exceptions
-
-  # из первого списка взять элемент
-  for element_of_list_one in "${ref_to_list_one[@]}"; do
-    # сравнивать его с каждым элементом из второго списка
-    for element_of_list_second in "${ref_to_list_second[@]}"; do
-      # если элементы равны
-      if [[ "$element_of_list_one" == "$element_of_list_second" ]]; then
-        # echo "$element_of_list_one = $element_of_list_second"
-        # то зафиксировать совпадение
-        match="yes"
-        # и перейти к следующему элементу из второго списка - эти элементы нам больше не интересны
-        break
+# function list_1 list_2 difference
+# list_1 - list_2 = difference (for install)
+# list_2 - list_1 = difference (for remove)
+# Arguments:
+#   list_1 (demand)
+#   list_2 (installed)
+#   difference
+# Outputs:
+#   difference
+# Returns:
+#   0
+function difference_of_list {
+  local -n ref_to_list_1=$1
+  local -n ref_to_list_2=$2
+  local -n ref_to_differences_lists=$3
+  local match_flag="no"
+  # take the element of the first list
+  for element_of_list_1 in "${ref_to_list_1[@]}"; do
+    # compare with each element of the second list
+    for element_of_list_2 in "${ref_to_list_2[@]}"; do
+      if [[ "$element_of_list_1" == "$element_of_list_2" ]]; then
+        # echo "$element_of_list_1 = $element_of_list_2"
+        match_flag="yes" # fix a match - the element is present in both lists
+        break # finish iterating the second list
       fi
     done
-    # если текущий элемент из первого списка не совпал ни с одним элементом из второго списка
-    if [[ "${match}" == "no" ]]; then
-      # то элемент из первого списка добавить в список различий
-      # echo "$element_of_list_one"
-      ref_to_differences_list+=("$element_of_list_one")
+    # if an element from the first list does not match any element from the second list
+    if [[ "${match_flag}" == "no" ]]; then
+      # add this item to difference list
+      ref_to_differences_lists+=("$element_of_list_1")
+      # echo "$element_of_list_1"
     fi
-    # опустить флаг совпадения
-    match="no"
-    # взять следующий элемент из первого списка
-  done
-
+    match_flag="no" # reset match flag
+  done # move to the next item from the first list
   return 0
 }
 
@@ -720,12 +757,8 @@ function code_launcher() {
   # exit 0
 # fi
 
-# check if command line argument is empty or not present
-if [ "$PROFILE" = "" ] || [ $# -gt 1 ]; then
-  PROFILE="Default"
-fi
 # если список из комбинаций наборов расширений (list_of_combinations) существует для указанного профиля,
-if profile_configuration_exists; then
+if profile_is; then
   echo ""
   echo "I'm doing ..."
   echo ""
@@ -743,7 +776,7 @@ show_list list_of_profile_extensions "List of profile extensions"
 
 # список установленных расширений
 declare -la list_of_installed_extensions=()
-get_a_list_of_installed_extensions list_of_installed_extensions
+get_list_installed_extensions list_of_installed_extensions
 show_list list_of_installed_extensions "List of installed extensions"
 
 declare -la list_of_extensions_to_install=()
@@ -753,8 +786,8 @@ declare -la parameters=()
 declare -i size_of_the_list_of_extensions_to_install
 declare -i size_of_the_list_of_extensions_to_remove
 declare action=''
-get_differences_between_two_lists list_of_profile_extensions list_of_installed_extensions list_of_extensions_to_install
-get_differences_between_two_lists list_of_installed_extensions list_of_profile_extensions list_of_extensions_to_remove
+difference_of_list list_of_profile_extensions list_of_installed_extensions list_of_extensions_to_install
+difference_of_list list_of_installed_extensions list_of_profile_extensions list_of_extensions_to_remove
 size_of_the_list_of_extensions_to_install=${#list_of_extensions_to_install[*]}
 size_of_the_list_of_extensions_to_remove=${#list_of_extensions_to_remove[*]}
 
