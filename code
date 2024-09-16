@@ -565,14 +565,6 @@ function profile_is {
   done
 }
 
-# Returns the list of installed extensions
-# Usage:
-# function result
-# Input:
-# no
-# Output:
-# result as reference to list of installed extensions
-
 # Merges combinations of extension sets into one list.
 # Usage:
 # function arg
