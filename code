@@ -22,7 +22,7 @@ else
 fi
 
 WORKSPACE="."
-# DEBUG="debug"
+DEBUG="debug"
 
 #DRIVE="/import/storage"
 #BASE_DIR="backup_by_mans"
@@ -44,7 +44,20 @@ CODE_BIN_FILE="/opt/visual-studio-code-insiders/bin/code-insiders"
 # export ESLINT_NO_DEV_ERRORS=true
 # export DISABLE_ESLINT_PLUGIN=true
 
-# Extension sets for different tasks
+# Extension sets
+
+# TODO: rename:
+# set_* to set_exts_*,
+# combo_* to combo_sets_*,
+# combos to combo_list or combinations or combos. Done to combos
+
+declare -a set_common=(
+  ms-dotnettools.vscode-dotnet-runtime
+  VisualStudioExptTeam.vscodeintellicode
+  VisualStudioExptTeam.vscodeintellicode-insiders
+  VisualStudioExptTeam.vscodeintellicode-completions
+  VisualStudioExptTeam.intellicode-api-usage-examples
+)
 
 # https://habr.com/ru/articles/583320/
 declare -a set_bash=(
@@ -59,11 +72,12 @@ declare -a set_bash=(
   # exiasr.hadolint # move to set_docker
   # jeff-hykin.better-dockerfile-syntax # move to set_docker
   xshrim.txt-syntax
+  #woozy-masta.shell-script-ide # Bundle all previous extinsions
   jeff-hykin.better-shellscript-syntax
   # Switch to the Dark+ theme
   # or
   # XD Theme
-  # Noctis
+  liviuschera.noctis # Noctis
   # Kary Pro Colors
   # Material Theme
   # One Monokai Theme
@@ -71,19 +85,42 @@ declare -a set_bash=(
   # Popping and Locking
   # Syntax Highlight Theme
   # Default Theme Enhanced
-  #woozy-masta.shell-script-ide # Bundle all previous extinsions
 )
 
 declare -a set_pascal=(
   #alefragnani.pascal
-  alefragnani.pascal-formatter
   Wosi.omnipascal
   CNOC.fpdebug
+  alefragnani.pascal-formatter
   #webfreak.debug #?
   #coolchyni.beyond-debug
 )
 
+declare -a set_c=(
+  jeff-hykin.better-c-syntax
+)
+
 declare -a set_cpp=(
+  # Project generator:
+  ACharLuk.fenix
+  # or
+  danielpinto8zz6.c-cpp-project-generator
+  #
+  jeff-hykin.better-cpp-syntax
+  # jeff-hykin.experimental-cpp-syntax # ?
+  # Switch to the Dark+ theme
+  # or
+  # XD Theme
+  liviuschera.noctis # Noctis
+  # Kary Pro Colors
+  # Material Theme
+  # One Monokai Theme
+  # Winteriscoming
+  # Popping and Locking
+  # Syntax Highlight Theme
+  # Default Theme Enhanced
+  #
+  ms-vscode.makefile-tools
   # ms-vscode.cpptools-extension-pack
   # consist of:
   # 1. C/C++ for Visual Studio Code:
@@ -95,18 +132,36 @@ declare -a set_cpp=(
   # 4. CMake Tools
   ms-vscode.cmake-tools
   # consist end.
-  #
-  jeff-hykin.better-cpp-syntax
-  #
-  # Project generator:
-  ACharLuk.fenix
-  # or
-  danielpinto8zz6.c-cpp-project-generator
-  #
-  ms-vscode.makefile-tools
 )
 
-declare -a set_of_extensions_for_html=(
+declare -a set_platformio=(
+  # ms-vscode.cpptools-extension-pack
+  # consist of:
+  # 1. C/C++ for Visual Studio Code:
+  # ms-vscode.cpptools
+  # 2. C/C++ Extension UI Themes
+  # ms-vscode.cpptools-themes
+  # 3. CMake For VisualStudio Code
+  # twxs.cmake
+  # 4. CMake Tools
+  # ms-vscode.cmake-tools
+  # consist end.
+  #
+  # jeff-hykin.better-cpp-syntax
+  #
+  # Project generator:
+  #ACharLuk.fenix
+  # or
+  #danielpinto8zz6.c-cpp-project-generator
+  #
+  #ms-vscode.makefile-tools
+  platformio.platformio-ide
+  ms-vscode.vscode-serial-monitor
+)
+
+declare -a set_mcu=()
+
+declare -a set_web_front_end=(
   ecmel.vscode-html-css
   # abusaidm.html-snippets
   Zignd.html-css-class-completion
@@ -126,21 +181,13 @@ declare -a set_of_extensions_for_html=(
   # deque-systems.vscode-axe-linter
   anteprimorac.html-end-tag-labels
   kamikillerto.vscode-linthtml
-)
-
-declare -a set_of_extensions_for_css=(
   # https://medium.com/@arslanijaz/vscode-tailwind-extensions-3c38bb2607fd
   bradlc.vscode-tailwindcss
 )
 
-# TODO refactoring: html+css+js this is front-end set (fe vscode profile), just js i.e. node.js this is back-end set (be vscode profile)
-declare -a set_js=(
-  ms-dotnettools.vscode-dotnet-runtime
+declare -a set_jsts=(
   ms-vscode.vscode-typescript-next
   ms-vscode.js-debug-nightly
-  visualstudioexptteam.vscodeintellicode-insiders
-  VisualStudioExptTeam.vscodeintellicode-completions
-  VisualStudioExptTeam.intellicode-api-usage-examples
   dbaeumer.vscode-eslint
   # capaj.vscode-standardjs-snippets
   # xabikos.JavaScriptSnippets
@@ -148,20 +195,23 @@ declare -a set_js=(
   humao.rest-client
   lllllllqw.jsdoc
   # ChakrounAnas.turbo-console-log
+  #esbenp.prettier-vscode
+  #tombonnike.vscode-status-bar-format-toggle
+  jeff-hykin.better-js-syntax
+  # Switch to the Dark+ theme
+  # or
+  # XD Theme
+  # Noctis
+  # Kary Pro Colors
+  # Material Theme
+  # One Monokai Theme
+  # Winteriscoming
+  # Popping and Locking
+  # Syntax Highlight Theme
+  # Default Theme Enhanced
 )
-# TODO For js add ext for doc generation
 
-declare -a set_of_extensions_for_nodejs=()
-
-declare -a set_of_extensions_for_ts=(
-  ms-vscode.vscode-typescript-next
-  ms-dotnettools.vscode-dotnet-runtime
-  visualstudioexptteam.vscodeintellicode-insiders
-  VisualStudioExptTeam.vscodeintellicode-completions
-  VisualStudioExptTeam.intellicode-api-usage-examples
-)
-
-declare -a set_of_extensions_for_php=(
+declare -a set_php=(
   xdebug.php-debug
   bmewburn.vscode-intelephense-client
   zobo.php-intellisense
@@ -171,7 +221,7 @@ declare -a set_of_extensions_for_php=(
   shanoor.vscode-nginx
 )
 
-declare -a set_of_extensions_for_python=(
+declare -a set_python=(
   # donjayamanne.python-extension-pack
   ms-python.python
   ms-python.vscode-pylance
@@ -179,26 +229,30 @@ declare -a set_of_extensions_for_python=(
   ms-python.isort
   wholroyd.jinja
   batisteo.vscode-django
-  ms-dotnettools.vscode-dotnet-runtime
-  visualstudioexptteam.vscodeintellicode-insiders
   donjayamanne.python-environment-manager
   njpwerner.autodocstring
   KevinRose.vsc-python-indent
-  VisualStudioExptTeam.intellicode-api-usage-examples
-  VisualStudioExptTeam.vscodeintellicode-completions
 )
 
-declare -a set_of_extensions_for_sql=(
+declare -a set_sql=(
   mtxr.sqltools
+  alexcvzz.vscode-sqlite
   mtxr.sqltools-driver-pg
   theumletteam.umlet
 )
 
 declare -a set_java=(
-  VisualStudioExptTeam.vscodeintellicode
+  # vscjava.vscode-java-pack
+  # consist of:
+  redhat.java
+  vscjava.vscode-java-debug
+  vscjava.vscode-java-test
+  vscjava.vscode-maven
+  vscjava.vscode-gradle
+  vscjava.vscode-java-dependency
 )
 
-declare -a set_of_extensions_for_perl=(
+declare -a set_perl=(
   jeff-hykin.better-perl-syntax
   # Material Theme
   # Noctis
@@ -209,11 +263,11 @@ declare -a set_of_extensions_for_perl=(
   # Syntax Highlight Theme
 )
 
-declare -a set_of_extensions_for_haskell=(
+declare -a set_haskell=(
   justusadam.language-haskell
 )
 
-declare -a set_of_extensions_for_lisp=(
+declare -a set_lisp=(
   jeff-hykin.better-lisp-syntax
 )
 
@@ -221,8 +275,31 @@ declare -a set_rust=(
   # https://open-vsx.org/extension/rust-lang/rust-analyzer
 )
 
+declare -a set_go=(
+  golang.Go
+  jeff-hykin.better-go-syntax
+)
+
+declare -a set_nix=(
+  jnoortheen.nix-ide
+  jeff-hykin.better-nix-syntax
+)
+
+declare -a set_prolog=(
+  jeff-hykin.better-prolog-syntax
+)
+
+declare -a set_objectivec=(
+  jeff-hykin.better-objc-syntax
+)
+
+declare -a set_objectivecpp=(
+  jeff-hykin.better-objcpp-syntax
+)
+
 declare -a set_docker=(
   ms-azuretools.vscode-docker
+  exiasr.hadolint
   jeff-hykin.better-dockerfile-syntax
   # Material Theme
   # Noctis
@@ -231,20 +308,25 @@ declare -a set_docker=(
   # Winteriscoming
   # Popping and Locking
   # Syntax Highlight Theme
-  exiasr.hadolint
 )
 
 declare -a set_remote_development=(
-  ms-vscode-remote.vscode-remote-extensionpack
-  # ms-vscode-remote.remote-containers
   # MS-vsliveshare.vsliveshare
-  # johnpapa.vscode-peacock
+  # ms-vscode-remote.vscode-remote-extensionpack
+  # consist of:
+  # ms-vscode-remote.remote-ssh
+  # ms-vscode.remote-server
+  ms-vscode-remote.remote-containers
+  # ms-vscode-remote.remote-wsl
 )
-declare -a set_of_extensions_for_debuging=(webfreak.debug)
 
-declare -a set_of_extensions_for_git=(
+declare -a set_debuging=(
+  webfreak.debug # Supports both GDB and LLDB.
+)
+
+declare -a set_git=(
   # eamodio.gitlens
-  mhutchie.git-graph
+  # mhutchie.git-graph
   # github.vscode-pull-request-github
   # donjayamanne.githistory
   # huizhou.githd
@@ -259,9 +341,10 @@ declare -a set_path_processing=(
   ionutvmi.path-autocomplete
 )
 
-declare -a set_of_extensions_for_code_formatter=(
-  esbenp.prettier-vscode # move to JS
-  tombonnike.vscode-status-bar-format-toggle # move to JS
+declare -a set_code_formatter=(
+  esbenp.prettier-vscode                     # move to JS?
+  tombonnike.vscode-status-bar-format-toggle # move to JS?
+  EditorConfig.EditorConfig
 )
 
 declare -a set_organizing_comments_todos_bookmarks=(
@@ -280,8 +363,13 @@ declare -a set_code_documentation=(
   cschlosser.doxdocgen
 )
 
-declare -a set_of_extensions_for_vue=(Vue.volar)
-declare -a set_of_extensions_for_twig=(mblode.twig-language-2)
+declare -a set_vue=(
+  Vue.volar
+)
+
+declare -a set_twig=(
+  mblode.twig-language-2
+)
 
 # Doc Writer Profile Template
 # https://code.visualstudio.com/docs/editor/profiles#_doc-writer-profile-template
@@ -296,62 +384,29 @@ declare -a set_markdown=(
   # DougFinke.vscode-pandoc # deprecated
 )
 
-declare -a set_of_extensions_for_json=(
+declare -a set_json=(
   richie5um2.vscode-sort-json
 )
-
-declare -a set_arduino=(
-  vsciot-vscode.vscode-arduino # deprecated
-  ms-vscode.vscode-serial-monitor
-  ms-vscode.cpptools #? всё так же, как и для platformio
-  # ms-vscode.cpptools-themes
-  jeff-hykin.better-cpp-syntax
-  # owen-flood.arduino-snippets-plus
-  # farhang0393.arduino-class-creator
-)
-
-declare -a set_platformio=(
-  # ms-vscode.cpptools-extension-pack
-  # consist of:
-  # 1. C/C++ for Visual Studio Code:
-  ms-vscode.cpptools
-  # 2. C/C++ Extension UI Themes
-  ms-vscode.cpptools-themes
-  # 3. CMake For VisualStudio Code
-  twxs.cmake
-  # 4. CMake Tools
-  ms-vscode.cmake-tools
-  # consist end.
-  #
-  jeff-hykin.better-cpp-syntax
-  #
-  # Project generator:
-  #ACharLuk.fenix
-  # or
-  #danielpinto8zz6.c-cpp-project-generator
-  #
-  #ms-vscode.makefile-tools
-  platformio.platformio-ide
-)
-
-declare -a set_of_extensions_for_mcu=()
-declare -a set_of_extensions_for_io=()
-declare -a set_of_extensions_for_iot=()
 
 declare -a set_utilities=(
   alefragnani.project-manager
   Tyriar.vscode-terminal-here
   drmerfy.overtype
-  formulahendry.code-runner
-  richie5um2.vscode-sort-json
+  # formulahendry.code-runner
   robole.profile-status
   natqe.reload
-  EditorConfig.EditorConfig
 )
 
 declare -a set_spelling=(
   streetsidesoftware.code-spell-checker
   streetsidesoftware.code-spell-checker-russian
+)
+
+declare -a set_themes=(
+  teabyii.ayu
+  arcticicestudio.nord-visual-studio-code
+  # ahmadawais.shades-of-purple
+  # johnpapa.vscode-peacock
 )
 
 declare -a set_icons=(
@@ -363,288 +418,204 @@ declare -a set_icons=(
   emmanuelbeziat.vscode-great-icons
 )
 
-declare -a set_themes=(
-  teabyii.ayu
-  arcticicestudio.nord-visual-studio-code
-  # ahmadawais.shades-of-purple
-  # johnpapa.vscode-peacock
-)
-
 # Special purpose themes
 # See Semantic Colorization:
 # https://devblogs.microsoft.com/cppblog/visual-studio-code-c-c-extension-july-2019-update/#semantic-colorization
+# https://marketplace.visualstudio.com/items?itemName=jeff-hykin.better-syntax
 
-declare -a set_better_syntax=(
+declare -a set_better_syntax_themes=(
   # jeff-hykin.xd-theme # optimized for syntax: C++, Dockerfile, Shell, Perl
   # and also: (JS JSX Rust Vue JSON Python Ruby HTML C# CoffeeScript CSS SASS YAML Markdown WASM Cython Toml)
-  liviuschera.noctis # supports a lot of languages # the best and move to base
+  liviuschera.noctis # supports a lot of languages # the best
   karyfoundation.theme-karyfoundation-themes
   Equinusocio.vsc-material-theme
   azemoh.one-monokai
   johnpapa.winteriscoming
   hedinne.popping-and-locking-vscode
   peaceshi.syntax-highlight
+  # ms-vscode.cpptools-themes
 )
 
 declare -a set_special_extensions=(
   WakaTime.vscode-wakatime
 )
 
-declare -a set_go=(
-  golang.Go
+declare -a set_better_syntax=(
+  jeff-hykin.better-csv-syntax
 )
 
 # Combination of sets (combo)
 
-declare -a combo_default=(
+declare -a combo_common=(
+  set_common
+  set_docker
+  set_remote_development
+  set_git
+  set_path_processing
+  set_code_formatter
+  set_organizing_comments_todos_bookmarks
+  set_markdown
+  set_json
   set_utilities
+  set_spelling
   set_themes
   set_icons
-  set_spelling
+  set_special_extensions
+  #set_better_syntax
+  set_sql
 )
 
 declare -a combo_bash=(
-  set_utilities
-  set_themes
-  set_icons
   set_bash
-  set_spelling
-  set_path_processing
-  set_markdown
-  set_better_syntax
-  set_organizing_comments_todos_bookmarks
-  set_special_extensions
-  # set_remote_development
 )
 
 declare -a combo_pascal=(
-  set_utilities
-  set_themes
-  set_icons
   set_pascal
-  set_spelling
-  set_path_processing
-  set_markdown
-  set_better_syntax
-  set_organizing_comments_todos_bookmarks
-  set_special_extensions
 )
 
 declare -a combo_cpp=(
-  set_utilities
-  set_themes
-  set_icons
   set_cpp
-  set_spelling
-  set_path_processing
-  set_markdown
-  set_better_syntax
-  set_organizing_comments_todos_bookmarks
-  set_special_extensions
 )
 
-declare -a combination_of_sets_for_markdown=(
-  set_utilities
-  set_themes
-  set_icons
-  set_spelling
-  set_markdown
-  set_better_syntax
-  set_special_extensions
+declare -a combo_web_front_end=(
+  set_web_front_end
+  set_jsts
 )
 
-declare -a combination_of_sets_for_html=(
-  set_of_extensions_for_html
-  set_markdown
-  set_organizing_comments_todos_bookmarks
-  #set_better_syntax
-  set_path_processing
-  set_of_extensions_for_code_formatter
-  #set_icons
-  set_of_extensions_for_css
+declare -a combo_jsts=(
+  set_jsts
 )
 
-declare -a combo_js=(
-  set_utilities
-  set_themes
-  set_icons
-  set_js
-  set_spelling
-  set_path_processing
-  set_markdown
-  set_better_syntax
-  set_remote_development
-  set_docker
-  set_of_extensions_for_html
-  set_organizing_comments_todos_bookmarks
-  set_special_extensions
-  set_of_extensions_for_code_formatter
+declare -a combo_python=(
+  set_python
 )
 
-declare -a combination_of_sets_for_python=(
-  set_basic
-  set_remote_development
-  set_docker
-  set_markdown
-  set_path_processing
-  set_of_extensions_for_python
-  set_organizing_comments_todos_bookmarks
-  #set_better_syntax
-  # set_code_documentation
+declare -a combo_php=(
+  set_php
 )
 
-declare -a combination_of_sets_for_php=()
-declare -a combination_of_sets_for_vue=()
-
-declare -a combination_of_sets_for_sql=(mtxr.sqltools)
-
-declare -a combination_of_sets_for_docker=()
-declare -a combination_of_sets_for_remote=()
-declare -a combination_of_sets_for_git=(
-  set_basic
-  set_markdown
-  set_of_extensions_for_git
-  # set_path_processing
-)
-
-declare -a combination_of_sets_for_arduino=(
-  set_basic
-  set_markdown
-  set_path_processing
-  set_arduino
-  #set_better_syntax
-  set_organizing_comments_todos_bookmarks
-  set_code_documentation
-  #set_icons
+declare -a combo_vue=(
+  set_vue
 )
 
 declare -a combo_platformio=(
-  set_utilities
-  set_themes
-  set_icons
   set_platformio
-  # set_cpp
-  set_spelling
-  set_path_processing
-  set_markdown
-  set_better_syntax
-  set_organizing_comments_todos_bookmarks
-  set_special_extensions
-  set_code_documentation
+  set_cpp
 )
 
-declare -a combination_of_sets_for_haskell=(
-  set_basic
-  set_markdown
-  set_of_extensions_for_haskell
+declare -a combo_haskell=(
+  set_haskell
 )
 
 declare -a combo_java=(
-  set_utilities
-  set_themes
-  set_icons
   set_java
-  set_spelling
-  set_path_processing
-  set_markdown
-  set_better_syntax
-  set_organizing_comments_todos_bookmarks
-  set_special_extensions
 )
 
 declare -a combo_go=(
-  set_utilities
-  set_themes
-  set_icons
   set_go
-  set_spelling
-  set_path_processing
-  set_markdown
-  set_better_syntax
-  set_organizing_comments_todos_bookmarks
-  set_special_extensions
 )
 
 # Associative array
 # profiles name as keys
 # value as a name of a combination of extension sets
-# list_of_combinations=([profile]=combination_of_sets_for_profile ...)
-# TODO: rename list_of_combinations to combinations
-declare -A list_of_combinations=(
-  [Default]=combo_default
-  [markdown]=combination_of_sets_for_markdown
-  [pascal]=combo_pascal
-  [html]=combination_of_sets_for_html
-  [js]=combo_js
-  [python]=combination_of_sets_for_python
-  [php]=combination_of_sets_for_php
-  [vue]=combination_of_sets_for_vue
-  [cpp]=combo_cpp
-  [sql]=combination_of_sets_for_sql
+# combos=([profile]=combo_profile ...)
+# TODO: rename combos to combinations
+declare -A combos=(
+  [common]=combo_common
   [bash]=combo_bash
-  [docker]=combination_of_sets_for_docker
-  [remote]=combination_of_sets_for_remote
-  [git]=combination_of_sets_for_git
-  [arduino]=combination_of_sets_for_arduino
+  [pascal]=combo_pascal
+  [cpp]=combo_cpp
+  [web]=combo_web_front_end
+  [jsts]=combo_jsts
+  [python]=combo_python
+  [php]=combo_php
+  [vue]=combo_vue
   [platformio]=combo_platformio
-  [haskell]=combination_of_sets_for_haskell
+  [haskell]=combo_haskell
   [java]=combo_java
   [go]=combo_go
 )
 
 # Functions
 
+# function code_launcher {
+# local -n opt=$1
+# $CODE_BIN_FILE \
+# --profile "$PROFILE" \
+# --user-data-dir $CODE_WORK_DATA_DIR \
+# --extensions-dir $CODE_WORK_EXTENSIONS_DIR \
+# "${opt[@]}" \
+# "$WORKSPACE"
+# return $?
+# }
+function code_launcher {
+  # exit 0
+  local -n opt=$1
+  $CODE_BIN_FILE \
+    --user-data-dir $CODE_WORK_DATA_DIR \
+    --extensions-dir $CODE_WORK_EXTENSIONS_DIR \
+    "${opt[@]}" \
+    "$WORKSPACE"
+  return $?
+}
+
+function merging_of_arrays {
+  local -n array_a=$1
+  local -n array_b=$2
+  local -n acc=$3
+  for element in "${array_a[@]}"; do
+    acc+=("$element")
+  done
+  for element in "${array_b[@]}"; do
+    acc+=("$element")
+  done
+  return 0
+}
+
 # Сhecks the existence of a profile.
 # Usage:
-# function arg
+# just call profile_exists
 # Globals:
-#   list_of_combinations - associated array
+#   combos - associated array
 #   PROFILE - profile name
-# Arguments:
-#   arg - string as profile name
 # Returns:
 #   0 - profile configuration exists
 #   1 - profile configuration not exists
-function profile_is {
-  for key in "${!list_of_combinations[@]}"; do
-    if [[ $key -eq "$PROFILE" ]];
-    then
+function profile_exists {
+  for key in "${!combos[@]}"; do
+    if [[ "$key" == "$PROFILE" ]]; then
       return 0
-    else
-    	return 1
     fi
   done
+  return 1
 }
 
-function code_launcher {
-  # exit 0
-  local -n options=$1
-  $CODE_BIN_FILE \
-  --profile "$PROFILE" \
-  --user-data-dir $CODE_WORK_DATA_DIR \
-  --extensions-dir $CODE_WORK_EXTENSIONS_DIR \
-  "${options[@]}" \
-  "$WORKSPACE"
-  return $?
-}
+# function get_installed_extensions {
+# $CODE_BIN_FILE \
+# --profile "$PROFILE" \
+# --user-data-dir $CODE_WORK_DATA_DIR \
+# --extensions-dir $CODE_WORK_EXTENSIONS_DIR \
+# --list-extensions \
+# "$WORKSPACE"
+# return $?
+# }
 
 function get_installed_extensions {
   # exit 0
   $CODE_BIN_FILE \
-  --profile "$PROFILE" \
-  --user-data-dir $CODE_WORK_DATA_DIR \
-  --extensions-dir $CODE_WORK_EXTENSIONS_DIR \
-  --list-extensions \
-  "$WORKSPACE"
+    --user-data-dir $CODE_WORK_DATA_DIR \
+    --extensions-dir $CODE_WORK_EXTENSIONS_DIR \
+    --list-extensions \
+    "$WORKSPACE"
   return $?
 }
 
 function get_list_installed_extensions {
-  local -i return_codes
-  local -n list_installed_extensions=$1
+  local -n list=$1
+  # local -i return_codes
   # https://www.shellcheck.net/wiki/SC2207
-  mapfile -t -O 1 list_installed_extensions < <(get_installed_extensions return_codes=$?)
-  return $return_codes
+  mapfile -t -O 1 list < <(get_installed_extensions return_codes=$?)
+  # return $return_codes
 }
 
 # Combines combinations of sets into one array.
@@ -657,18 +628,38 @@ function get_list_installed_extensions {
 #   result - merged arrays
 # Returns:
 #   0
-function merge_combo_sets_into_list_extensions {
+function get_list_profile_extensions {
   local -n array_of_arrays=$1
-  local -n merged_array=$2
+  local -n joined_array=$2
   local -n array_1
-  local array_2=""
+  local array_2_element=""
   for array_1 in "${array_of_arrays[@]}"; do
     # echo "$array_1"
-    for array_2 in "${array_1[@]}"; do
-      # echo "$array_2"
-      merged_array+=( "$array_2" )
+    for array_2_element in "${array_1[@]}"; do
+      # echo "$array_2_element"
+      joined_array+=("$array_2_element")
     done
   done
+  return 0
+}
+
+function get_full_list_extensions {
+  #local -n array_of_arrays
+  local -n combo
+  local -n set
+  local -n joined_array=$1
+  local ext=""
+  for combo in "${combos[@]}"; do
+    # echo $combo
+    for set in "${combo[@]}"; do
+      # echo $set
+      for ext in "${set[@]}"; do
+        # echo "${ext}"
+        joined_array+=("${ext}")
+      done
+    done
+  done
+  # echo "${joined_array[@]}"
   return 0
 }
 
@@ -694,10 +685,19 @@ function create_a_list_of_parameters {
       ref_to_list_of_installation_options+=(--pre-release)
       # ref_to_list_of_installation_options+=(--force)
       # ref_to_list_of_installation_options+=(--trace-deprecation)
-    elif [[ $action == "uninstall" ]]; then
-      ref_to_list_of_installation_options+=(--uninstall-extension)
-    ref_to_list_of_installation_options+=("$extension_name")
     fi
+    if [[ $action == "uninstall" ]]; then
+      ref_to_list_of_installation_options+=(--uninstall-extension)
+      ref_to_list_of_installation_options+=("$extension_name")
+    fi
+    if [[ $action == "disable" ]]; then
+      ref_to_list_of_installation_options+=(--disable-extension)
+      ref_to_list_of_installation_options+=("$extension_name")
+    fi
+    # if [[ $action == "enable" ]]; then
+    # ref_to_list_of_installation_options+=(--enable-extension)
+    # ref_to_list_of_installation_options+=("$extension_name")
+    # fi
   done
 }
 
@@ -726,7 +726,7 @@ function difference_of_list {
       if [[ "$element_of_list_1" == "$element_of_list_2" ]]; then
         # echo "$element_of_list_1 = $element_of_list_2"
         match_flag="yes" # fix a match - the element is present in both lists
-        break # finish iterating the second list
+        break            # finish iterating the second list
       fi
     done
     # if an element from the first list does not match any element from the second list
@@ -736,23 +736,23 @@ function difference_of_list {
       # echo "$element_of_list_1"
     fi
     match_flag="no" # reset match flag
-  done # move to the next item from the first list
+  done              # move to the next item from the first list
   return 0
 }
 
-function make_install_and_uninstall_lists {
-  local -n required_extensions=$1
-  local -n installed_extensions=$2
-  local -n list_install=$3
-  local -n list_uninstall=$4
-  local -n install_size=$5
-  local -n uninstall_size=$6
-
-  difference_of_list required_extensions installed_extensions list_install
-  difference_of_list installed_extensions required_extensions list_uninstall
-  install_size=${#list_install[@]}
-  uninstall_size=${#list_uninstall[@]}
-}
+# function make_install_and_uninstall_lists {
+# local -n required_extensions=$1
+# local -n installed_extensions=$2
+# local -n list_install=$3
+# local -n list_uninstall=$4
+# local -n install_size=$5
+# local -n uninstall_size=$6
+#
+# difference_of_list required_extensions installed_extensions list_install
+# difference_of_list installed_extensions required_extensions list_uninstall
+# install_size=${#list_install[@]}
+# uninstall_size=${#list_uninstall[@]}
+# }
 
 function print_list() {
   declare -g DEBUG
@@ -771,61 +771,139 @@ function print_list() {
   return 0
 }
 
+# Main
+
 if [ "$PROFILE" = "help" ]; then
   declare -la options=(--help)
   code_launcher options
   exit 0
 fi
 
-# If the combination exists
-if ! profile_is; then
+# If the combination not exists
+if ! profile_exists; then
   echo "Ooops! '${PROFILE}' configuration does not exist!"
-  echo ""
-  echo "Specify the profile and corresponding combination of extension sets in the list_of_combinations array and repeat again."
+  #echo ""
+  #echo "Specify the profile and corresponding combination of extension sets in the combos array and repeat again."
   exit 1
 fi
 
-# List of extensions included in the combination for a specific profile
-declare -la list_required_extensions_profile=()
-declare -n profile_name="${list_of_combinations["$PROFILE"]}"
-# make_list_required_extensions list_required_extensions_profile
-merge_combo_sets_into_list_extensions profile_name list_required_extensions_profile
-print_list list_required_extensions_profile "Extensions required by profile"
+# Stuff: Necessary, unnecessary
 
-# List of installed extensions
-declare -la list_of_installed_extensions=()
-get_list_installed_extensions list_of_installed_extensions
-print_list list_of_installed_extensions "Extensions already installed"
-
-declare -la list_extensions_install=()
-declare -la list_extensions_uninstall=()
-declare -la code_run_options=()
-declare -i list_extensions_install_size
-declare -i list_extensions_uninstall_size
+declare -la full_list_extensions=()
+declare -la list_installed_extensions=()
+declare -la list_profile_extensions=()
+declare -la list_extensions_for_install=()
+declare -la list_profile_extensions_for_install
+declare -la list_extensions_for_uninstall=()
+declare -la list_extensions_for_disable=()
+declare -la code_launch_parameters=()
+declare -la list_common_extensions=()
+declare -i number_of_installed_extensions
+declare -i number_of_extensions_for_uninstall
+declare -i number_of_extensions_for_install
+declare -i number_of_extensions_for_disable
+declare -i number_of_profile_extensions_for_install
+declare -n combo_name="${combos["$PROFILE"]}"
+declare -n combo_common_name="${combos["common"]}"
 declare action=''
-make_install_and_uninstall_lists list_required_extensions_profile list_of_installed_extensions list_extensions_install list_extensions_uninstall list_extensions_install_size list_extensions_uninstall_size
 
-if [[ $list_extensions_uninstall_size -gt 0 ]]; then
-  # remove extensions
-  print_list list_extensions_uninstall "List extensions uninstall"
+get_list_profile_extensions combo_name list_profile_extensions
+get_list_installed_extensions list_installed_extensions
+get_full_list_extensions full_list_extensions
+get_list_profile_extensions combo_common_name list_common_extensions
+
+print_list full_list_extensions "Full list extensions "
+print_list list_installed_extensions "List installed extensions "
+print_list list_profile_extensions "List profile extensions "
+print_list list_common_extensions 'List common ext '
+print_list list_extensions_for_uninstall 'List ext for uninstall '
+
+# удалить лишние расширения
+# uninstall extensions
+# сравнить список установленных и общий список расширений
+difference_of_list list_installed_extensions full_list_extensions list_extensions_for_uninstall
+number_of_extensions_for_uninstall=${#list_extensions_for_uninstall[@]}
+if [[ $number_of_extensions_for_uninstall -gt 0 ]]; then
   action='uninstall'
-  create_a_list_of_parameters list_extensions_uninstall $action code_run_options
-  print_list code_run_options 'Code run options'
-  code_launcher code_run_options
-  code_run_options=()
-fi
-if [[ $list_extensions_install_size -gt 0 ]]; then
-  # install extensions
-  print_list list_extensions_install "List extensions install"
-  action='install'
-  create_a_list_of_parameters list_extensions_install $action code_run_options
-  print_list code_run_options 'Code run options'
-  code_launcher code_run_options
-  code_run_options=()
+  create_a_list_of_parameters list_extensions_for_uninstall $action code_launch_parameters
+  print_list code_launch_parameters 'Code run options '
+  code_launcher code_launch_parameters
+  code_launch_parameters=()
 fi
 
-code_run_options=( --update-extensions )
-code_launcher code_run_options
-code_run_options=()
-code_launcher code_run_options
+# обновить установленые
+number_of_installed_extensions=${#list_installed_extensions[@]}
+if [[ $list_installed_extensions -gt 0 ]]; then
+  code_launch_parameters=(--update-extensions)
+  code_launcher code_launch_parameters
+  code_launch_parameters=()
+fi
+
+# установить недостающие
+# install extensions
+# сравнить список установленных и общий список расширений
+difference_of_list full_list_extensions list_installed_extensions list_extensions_for_install
+print_list list_extensions_for_install 'List ext for install '
+number_of_extensions_for_install=${#list_extensions_for_install[@]}
+if [[ $number_of_extensions_for_install -gt 0 ]]; then
+  action='install'
+  create_a_list_of_parameters list_extensions_for_install $action code_launch_parameters
+  print_list code_launch_parameters 'Code launch parameters '
+  code_launcher code_launch_parameters
+  code_launch_parameters=()
+fi
+
+# запустить code с выключением ненужных расширений
+# объединить список расширений профиля и common
+declare -la profile_and_common_lists=()
+merging_of_arrays list_profile_extensions list_common_extensions profile_and_common_lists
+print_list profile_and_common_lists 'Profile and common lists '
+# сравнить общий список расширений и объединённый
+difference_of_list full_list_extensions profile_and_common_lists list_extensions_for_disable
+# результатом будет список расширений для выключения
+number_of_extensions_for_disable=${#list_extensions_for_disable[@]}
+if [[ $number_of_extensions_for_disable -gt 0 ]]; then
+  action='disable'
+  create_a_list_of_parameters list_extensions_for_disable $action code_launch_parameters
+  print_list code_launch_parameters 'Code launch parameters '
+  code_launcher code_launch_parameters
+  code_launch_parameters=()
+fi
+
+# make_install_and_uninstall_lists full_list_extensions list_installed_extensions list_extensions_for_install list_extensions_for_uninstall number_of_extensions_for_install number_of_extensions_for_uninstall
+
+# install extensions
+# if [[ $number_of_extensions_for_install -gt 0 ]]; then
+#   print_list list_extensions_for_install "List extensions install"
+#   action='install'
+#   create_a_list_of_parameters list_extensions_for_install $action code_launch_parameters
+#   print_list code_launch_parameters 'Code launch parameters:'
+#   code_launcher code_launch_parameters
+#   code_launch_parameters=()
+# fi
+
+# disable extensions
+# if [[ $number_of_extensions_for_disable -gt 0 ]]; then
+# action='disable'
+# create_a_list_of_parameters list_extensions_for_disable $action code_launch_parameters
+# print_list code_launch_parameters 'Code launch parameters:'
+# code_launcher code_launch_parameters
+# code_launch_parameters=()
+# fi
+
+# enable extensions
+# if [[ $number_of_extensions_for_enable -gt 0 ]]; then
+# print_list list_extensions_for_enable "List extensions enable"
+# action='enable'
+# create_a_list_of_parameters list_extensions_for_enable $action code_launch_parameters
+# print_list code_launch_parameters 'Code launch parameters:'
+# code_launcher code_launch_parameters
+# code_launch_parameters=()
+# fi
+
+# launch_options
+# code_launch_parameters=(--update-extensions)
+# code_launcher code_launch_parameters
+# code_launch_parameters=()
+# code_launcher code_launch_parameters
 exit 0
