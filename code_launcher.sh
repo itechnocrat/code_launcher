@@ -58,6 +58,7 @@ fi
 
 # TODO: made update only for language exts
 # TODO: show all available setups of launguage
+#
 # TODO: move this block to the launch area of the JS profile
 # export NODE_ENV=production
 # export BABEL_ENV=production

@@ -6,7 +6,7 @@ CODE_WORK_DATA_DIR="$CODE_WORK_DIR/common"
 CODE_WORK_EXTENSIONS_DIR="$CODE_WORK_DIR/extensions"
 CODE_BIN_FILE="/opt/visual-studio-code-insiders/bin/code-insiders"
 
-PROFILE="Default"
+#PROFILE="Default"
 WORKSPACE="."
 DEBUG="debug"
 
