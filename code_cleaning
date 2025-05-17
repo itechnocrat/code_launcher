@@ -1,0 +1,21 @@
+#! /usr/bin/bash
+
+HOME_DIR=/home/technocrat
+CODE_WORK_DATA_DIR="$HOME_DIR/.config/Code - Insiders"
+CODE_WORK_EXTENSIONS_DIR=$HOME_DIR/.vscode-insiders
+
+# echo $CODE_WORK_DATA_DIR
+
+if [ -d "$CODE_WORK_DATA_DIR" ]
+    then
+        rm -dr "$CODE_WORK_DATA_DIR"
+        echo "Directory $CODE_WORK_DATA_DIR deleted"
+        echo ""
+fi
+
+if [ -d "$CODE_WORK_EXTENSIONS_DIR" ]
+    then
+        rm -dr $CODE_WORK_EXTENSIONS_DIR
+        echo "Directory $CODE_WORK_EXTENSIONS_DIR deleted"
+        echo ""
+fi

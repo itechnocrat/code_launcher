@@ -10,7 +10,7 @@ PROFILE="Default"
 WORKSPACE="."
 DEBUG="debug"
 
-function get_lenght_array {
+function get_length_array {
   local -n array=$1
   echo ${#array[*]}
 }
@@ -33,7 +33,7 @@ function log {
     exit 0
   fi
   local -n array=$1
-  # call get_lenght_array
+  # call get_length_array
   # call array_dump
   echo
 }
@@ -51,7 +51,7 @@ function merge_arrays {
   return 0
 }
 
-# Сhecks the existence of a profile.
+# Check the existence of a profile.
 # Usage:
 # just call profile_exists
 # Globals:
@@ -69,7 +69,7 @@ function profile_exists {
   return 1
 }
 
-# Сhecks the existence of a language combo sets.
+# Check the existence of a language combo sets.
 # Usage:
 # check_key_array associated_array language_id
 # Arguments:
@@ -238,7 +238,7 @@ function difference_of_list {
   return 0
 }
 
-# Discription.
+# Description
 # Usage:
 # function_name array_extensions_for_uninstall
 # Arguments:

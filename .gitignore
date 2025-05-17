@@ -1,5 +1,6 @@
 *
 !.gitignore
-!code
+!code_cleaning
+!code_launcher.sh
 !code_launcher_api.sh
 !code_launcher_db.sh
