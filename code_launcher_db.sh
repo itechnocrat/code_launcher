@@ -1,5 +1,9 @@
 #! /usr/bin/bash
 
+#
+# license ...
+#
+
 # https://habr.com/ru/articles/583320/
 declare -la set_bash=(
   timonwong.shellcheck
@@ -10,7 +14,7 @@ declare -la set_bash=(
   meronz.manpages
   Remisa.shellman
   formulahendry.code-runner
-  exiasr.hadolint
+  # exiasr.hadolint
   jeff-hykin.better-shellscript-syntax
 )
 
@@ -27,15 +31,16 @@ declare -la set_c=(
 )
 
 declare -la set_cpp=(
-  jeff-hykin.better-c-syntax
+  #jeff-hykin.better-c-syntax
   jeff-hykin.better-cpp-syntax
   # jeff-hykin.experimental-cpp-syntax # ?
-  ms-vscode.makefile-tools
+  #ms-vscode.makefile-tools
   #
   # Project generator:
   # ACharLuk.fenix
   # or
   danielpinto8zz6.c-cpp-project-generator
+  #
   # ms-vscode.cpptools-extension-pack
   # consist of:
   # 1. C/C++ for Visual Studio Code:
@@ -49,6 +54,10 @@ declare -la set_cpp=(
   # consist end.
 )
 
+declare -la set_debuggers=(
+  webfreak.debug # Supports both GDB and LLDB.
+)
+
 declare -la set_csharp=(
   ms-dotnettools.csharp
   ms-dotnettools.csdevkit
@@ -58,10 +67,15 @@ declare -la set_csharp=(
 declare -la set_mcu=(
   ms-vscode.vscode-serial-monitor
   platformio.platformio-ide
-  # pioarduino.pioarduino-ide # supports the latest Arduino core for the ESP32 (version 3)
-  # https://randomnerdtutorials.com/vs-code-pioarduino-ide-esp32/
+  # pioarduino.pioarduino-ide #:
+  # supports the latest Arduino core for the ESP32
+  # (version 3)
+  # <https://randomnerdtutorials.com/\
+  # vs-code-pioarduino-ide-esp32/>
   # Add the following line to the platformio.ini file:
-  # platform = https://github.com/pioarduino/platform-espressif32/releases/download/stable/platform-espressif32.zip
+  # platform = https://github.com/pioarduino/\
+  # platform-espressif32/releases/download/\
+  # stable/platform-espressif32.zip
 )
 
 declare -la set_html=(
@@ -88,7 +102,8 @@ declare -la set_css=(
   naumovs.color-highlight
   # vincaslt.highlight-matching-tag
   # deque-systems.vscode-axe-linter
-  # https://medium.com/@arslanijaz/vscode-tailwind-extensions-3c38bb2607fd
+  # <https://medium.com/@arslanijaz/\
+  # vscode-tailwind-extensions-3c38bb2607fd>
   bradlc.vscode-tailwindcss
 )
 
@@ -105,8 +120,9 @@ declare -la set_jsts=(
   jeff-hykin.better-js-syntax
 )
 
+# <https://code.visualstudio.com/docs/configure/profiles\
+# #_nodejs-profile-template>
 declare -la set_nodejs=(
-  # https://code.visualstudio.com/docs/configure/profiles#_nodejs-profile-template
   dbaeumer.vscode-eslint
   # ms-vscode-remote.remote-containers
   # ms-azuretools.vscode-docker
@@ -153,9 +169,10 @@ declare -la set_php=(
 declare -la set_python=(
   # donjayamanne.python-extension-pack
   ## consist of:
-  ms-python.python
+  ms-python.python #(Pylance, Python Debugger)
   # wholroyd.jinja
   # batisteo.vscode-django
+  ## VisualStudioExptTeam.vscodeintellicode
   # donjayamanne.python-environment-manager
   # njpwerner.autodocstring
   # KevinRose.vsc-python-indent
@@ -165,14 +182,13 @@ declare -la set_python=(
   # ms-toolsai.jupyter-renderers
   # ms-toolsai.vscode-jupyter-cell-tags
   # ms-toolsai.vscode-jupyter-slideshow
-  # ms-toolsai.vscode-jupyter-powertoys # experimental features
+  # ms-toolsai.vscode-jupyter-powertoys #experimental 
   #
-  # ms-python.vscode-python-envs
+  # ms-python.vscode-python-envs #(depend ms-python.python)
+  # ms-python.vscode-pylance
   # ms-python.debugpy
   # charliermarsh.ruff
-  # ms-python.vscode-pylance
   # ms-python.isort
-
 )
 # This profile also sets the following settings:
 # "python.analysis.autoImportCompletions": true,
@@ -210,9 +226,10 @@ declare -la set_data_science=(
 # }
 
 declare -la set_sql=(
-  mtxr.sqltools
-  mtxr.sqltools-driver-pg
-  alexcvzz.vscode-sqlite
+  #mtxr.sqltools
+  #mtxr.sqltools-driver-pg
+  #mtxr.sqltools-driver-sqlite
+  #alexcvzz.vscode-sqlite
 )
 
 declare -la set_java=(
@@ -234,14 +251,15 @@ declare -la set_haskell=(
 
 declare -la set_perl=(
   # jeff-hykin.better-perl-syntax
-  # Use a theme like one of the following to benefit from the changes:
-  # Material Theme
-  # Noctis
-  # XD Theme
-  # One Monokai Theme
-  # Winteriscoming
-  # Popping and Locking
-  # Syntax Highlight Theme
+  ## Use a theme like one of the following
+  ## to benefit from the changes:
+  ## Material Theme
+  ## Noctis
+  ## XD Theme
+  ## One Monokai Theme
+  ## Winteriscoming
+  ## Popping and Locking
+  ## Syntax Highlight Theme
 )
 
 declare -la set_lisp=(
@@ -275,18 +293,18 @@ declare -la set_objectivecpp=(
 )
 
 declare -la set_docker=(
-  # insert here consist of set_bash ? # - no, only in combo!
   ms-azuretools.vscode-docker
-  # exiasr.hadolint
-  # jeff-hykin.better-dockerfile-syntax
-  # Use a theme like one of the following to benefit from the changes:
-  # Material Theme
-  # Noctis
-  # XD Theme
-  # One Monokai Theme
-  # Winteriscoming
-  # Popping and Locking
-  # Syntax Highlight Theme
+  exiasr.hadolint
+  jeff-hykin.better-dockerfile-syntax
+  ## Use a theme like one of the following
+  ## to benefit from the changes:
+  ## Material Theme
+  ## Noctis
+  ## XD Theme
+  ## One Monokai Theme
+  ## Winteriscoming
+  ## Popping and Locking
+  ## Syntax Highlight Theme
 )
 
 declare -la set_remote_development=(
@@ -297,10 +315,6 @@ declare -la set_remote_development=(
   # ms-vscode.remote-server
   ms-vscode-remote.remote-containers
   # ms-vscode-remote.remote-wsl
-)
-
-declare -la set_debuging=(
-  webfreak.debug # Supports both GDB and LLDB.
 )
 
 declare -la set_git=(
@@ -344,11 +358,13 @@ declare -la set_twig=(
   mblode.twig-language-2
 )
 
-# Doc Writer Profile Template
-# https://code.visualstudio.com/docs/editor/profiles#_doc-writer-profile-template
+## Doc Writer Profile Template
+## <https://code.visualstudio.com/docs/editor/profiles\
+## #_doc-writer-profile-template>
 
 declare -la set_markdown=(
   # yzhang.markdown-all-in-one
+  #
   # bierner.markdown-checkbox
   # bierner.markdown-emoji
   # bierner.markdown-footnotes
@@ -368,16 +384,20 @@ declare -la set_json=(
   richie5um2.vscode-sort-json
 )
 
+declare -la set_uml=(
+  theumletteam.umlet
+)
+
 declare -la set_utilities=(
+  #vscodevim.vim
   alefragnani.project-manager
   Tyriar.vscode-terminal-here
-  # drmerfy.overtype
+  # drmerfy.overtype # deprecated
   robole.profile-status
   natqe.reload
   # jeff-hykin.better-csv-syntax
   # tamasfe.even-better-toml
   EditorConfig.EditorConfig
-  theumletteam.umlet
   xshrim.txt-syntax
   # pomdtr.excalidraw-editor
   # hediet.vscode-drawio
@@ -392,10 +412,11 @@ declare -la set_spelling=(
 
 declare -la set_themes=(
   teabyii.ayu
-  arcticicestudio.nord-visual-studio-code
-  metaphore.kanagawa-vscode-color-theme
-  ahmadawais.shades-of-purple
-  wesbos.theme-cobalt2 # johnpapa.vscode-peacock
+  #arcticicestudio.nord-visual-studio-code
+  #metaphore.kanagawa-vscode-color-theme
+  #ahmadawais.shades-of-purple
+  #wesbos.theme-cobalt2
+  #johnpapa.vscode-peacock
 )
 
 declare -la set_icons=(
@@ -407,74 +428,90 @@ declare -la set_icons=(
   # emmanuelbeziat.vscode-great-icons
 )
 
-# Special purpose themes
-# See Semantic Colorization:
-# https://devblogs.microsoft.com/cppblog/visual-studio-code-c-c-extension-july-2019-update/#semantic-colorization
-# https://marketplace.visualstudio.com/items?itemName=jeff-hykin.better-syntax
-# Switch to the Dark+ theme
-# or
-# XD Theme
-# Noctis
-# Kary Pro Colors
-# Material Theme
-# One Monokai Theme
-# Winteriscoming
-# Popping and Locking
-# Syntax Highlight Theme
-# Default Theme Enhanced
+## Special purpose themes
+## See Semantic Colorization:
+## <https://devblogs.microsoft.com/cppblog/\
+## visual-studio-code-c-c-extension-july-2019-update/\
+## #semantic-colorization>
+## <https://marketplace.visualstudio.com/\
+## items?itemName=jeff-hykin.better-syntax>
+## Switch to the Dark+ theme
+## or
+## XD Theme
+## Noctis
+## Kary Pro Colors
+## Material Theme
+## One Monokai Theme
+## Winteriscoming
+## Popping and Locking
+## Syntax Highlight Theme
+## Default Theme Enhanced
 
 declare -la set_better_syntax_themes=(
-  # XD Theme:
-  # optimized for syntax: C++, Dockerfile, Shell, Perl
-  # and also: (JS JSX Rust Vue JSON Python Ruby HTML C# CoffeeScript CSS SASS YAML Markdown WASM Cython Toml)
+  ## XD Theme:
+  ## optimized for syntax:
+  ## C++, Dockerfile, Shell, Perl
+  ## and also:
+  ## (JS JSX Rust Vue JSON Python Ruby HTML C# \
+  ## CoffeeScript CSS SASS YAML Markdown WASM Cython Toml)
   # jeff-hykin.xd-theme
-  # Noctis:
+  ## Noctis:
   liviuschera.noctis
-  # Kary Pro Colors:
-  karyfoundation.theme-karyfoundation-themes
-  # Material Theme:
+  ## Kary Pro Colors:
+  # karyfoundation.theme-karyfoundation-themes
+  ## Material Theme:
   # Equinusocio.vsc-material-theme # deprecated
   # vira.vsc-vira-theme
-  # One Monokai Theme:
-  azemoh.one-monokai
-  # Winteriscoming:
-  johnpapa.winteriscoming
-  # Popping and Locking:
-  hedinne.popping-and-locking-vscode
-  # Syntax Highlight Theme:
-  peaceshi.syntax-highlight
-  # Default Theme Enhanced:
+  ## One Monokai Theme:
+  # azemoh.one-monokai
+  ## Winteriscoming:
+  #johnpapa.winteriscoming
+  ## Popping and Locking:
+  # hedinne.popping-and-locking-vscode
+  ## Syntax Highlight Theme:
+  # peaceshi.syntax-highlight
+  ## Default Theme Enhanced:
   # ms-vscode.cpptools-themes
-  # Light Theme,
-  # Dark Theme,
-  # 2017 Light Theme,
-  # 2017 Dark Theme
+  ## Light Theme,
+  ## Dark Theme,
+  ## 2017 Light Theme,
+  ## 2017 Dark Theme
 )
 
 declare -la set_special_extensions=(
   WakaTime.vscode-wakatime
 )
 
+# for:
+# set_csharp
+# set_jsts
+# set_python
+# set_java
 declare -la set_dotnet_runtime=(
   ms-dotnettools.vscode-dotnet-runtime
 )
 
+# for:
+# set_python
+# set_jsts
+# set_java
 declare -la set_intellicode=(
   # VisualStudioExptTeam.vscodeintellicode
   VisualStudioExptTeam.vscodeintellicode-insiders
 )
 
+# for:
+# set_jsts
+# set_python
 declare -la set_intellicode_completions_and_api_examples=(
   VisualStudioExptTeam.vscodeintellicode-completions
   VisualStudioExptTeam.intellicode-api-usage-examples
 )
 
 declare -la set_docwriter=(
-  # streetsidesoftware.code-spell-checker # already in set_spelling
-  ms-vscode.wordcount
-  johnpapa.read-time
-  #
-  # already in set_markdown:
+  # Doc Writer Profile Template
+  # streetsidesoftware.code-spell-checker #:\
+  # already in set_spelling
   # bierner.markdown-checkbox
   # bierner.markdown-emoji
   # bierner.markdown-footnotes
@@ -482,7 +519,8 @@ declare -la set_docwriter=(
   # bierner.markdown-mermaid
   # bierner.markdown-yaml-preamble
   # DavidAnson.vscode-markdownlint
-  #
+  ms-vscode.wordcount
+  johnpapa.read-time
 )
 # This profile also sets the following settings:
 # "workbench.colorTheme": "Default Light Modern",
@@ -506,35 +544,38 @@ declare -la set_prettier=(
   tombonnike.vscode-status-bar-format-toggle
 )
 
+# <https://code.visualstudio.com/docs/configure/profiles\
+# #_angular-profile-template>
 declare -la set_angular=(
-  # https://code.visualstudio.com/docs/configure/profiles#_angular-profile-template
 )
 
 # End_sets
 
 # Combination of sets (combo)
 
-declare -a combo_common=(
-  # set_docker
-  # set_remote_development
-  set_git
-  set_path_processing
-  set_organizing_comments_todos_bookmarks
-  set_markdown
+declare -a combo_base=(
+  #set_docker
+  #set_remote_development
+  #set_git
+  #set_path_processing
+  #set_organizing_comments_todos_bookmarks
   set_json
-  set_spelling
-  set_utilities
+  #set_spelling
+  #set_markdown
+  #set_docwriter
+  #set_utilities
   set_themes
-  set_better_syntax_themes
+  set_better_syntax_themes #TODO: move to relevant set
   set_icons
-  set_sql
+  #set_sql
   set_special_extensions
+  #set_dotnet_runtime # ! temporary !
 )
 
-declare -a combo_writer=(
+declare -a combo_docwriter=(
   set_spelling
-  set_docwriter
   set_markdown
+  set_docwriter
 )
 
 declare -a combo_bash=(
@@ -547,13 +588,14 @@ declare -a combo_pascal=(
 
 declare -a combo_cpp=(
   set_cpp
+  set_debuggers
 )
 
 declare -a combo_web_front_end=(
   set_html
   set_css
   set_jsts
-  set_prettier
+  set_prettier 
 )
 
 declare -a combo_web_back_end=(
@@ -562,6 +604,7 @@ declare -a combo_web_back_end=(
   set_intellicode
   set_intellicode_completions_and_api_examples
   set_nodejs
+  set_prettier 
 )
 
 declare -a combo_python=(
@@ -624,12 +667,12 @@ declare -a combo_prolog=(
 # combos=([language]=combo_* ...)
 
 declare -A combos=(
-  [common]=combo_common
+  [base]=combo_base
   [bash]=combo_bash
   [pascal]=combo_pascal
   [cpp]=combo_cpp
-  # [front]=combo_web_front_end
-  [back]=combo_web_back_end
+  [frontend]=combo_web_front_end
+  [backend]=combo_web_back_end
   [python]=combo_python
   # [mcu]=combo_mcu
   # [haskell]=combo_haskell
@@ -639,27 +682,9 @@ declare -A combos=(
   # [lisp]=combo_lisp
   # [nix]=combo_nix
   # [prolog]=combo_prolog
-  # [editor]=combo_writer
+  # [docwriter]=combo_docwriter
   # [php]=combo_php
   # [vue]=combo_vue
 )
 
-# ms-dotnettools.vscode-dotnet-runtime
-# for:
-# set_csharp
-# set_jsts
-# set_python
-# set_java
-#
-# VisualStudioExptTeam.vscodeintellicode
-# VisualStudioExptTeam.vscodeintellicode-insiders
-# VisualStudioExptTeam.vscodeintellicode-completions
-# VisualStudioExptTeam.intellicode-api-usage-examples
-# for:
-# set_jsts
-# set_python
-#
-# VisualStudioExptTeam.vscodeintellicode
-# VisualStudioExptTeam.vscodeintellicode-insiders
-# for:
-# set_java
+return
