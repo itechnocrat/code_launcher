@@ -45,11 +45,11 @@ die() {
 # Function that evaluates whether a value passed to it begins by a character
 # that is a short option of an argument the script knows about.
 # This is required in order to support getopts-like short options grouping.
-begins_with_short_option() {
-	local first_option all_short_options='h'
-	first_option="${1:0:1}"
-	test "$all_short_options" = "${all_short_options/$first_option/}" && return 1 || return 0
-}
+#begins_with_short_option() {
+#	local first_option all_short_options='h'
+#	first_option="${1:0:1}"
+#	test "$all_short_options" = "${all_short_options/$first_option/}" && return 1 || return 0
+#}
 
 # THE DEFAULTS INITIALIZATION - POSITIONALS
 # The positional args array has to be reset before the parsing, because it may already be defined
@@ -150,6 +150,8 @@ assign_positional_args 1 "${_positionals[@]}"
 
 declare -i DEBUG="1"
 
+WORKSPACE="."
+
 LANGUAGE="$_arg_language"
 
 if [[ "$_arg_profile" == "default" ]]; then
@@ -157,8 +159,6 @@ if [[ "$_arg_profile" == "default" ]]; then
 else
 	PROFILE="$_arg_profile"
 fi
-
-WORKSPACE="$PWD"
 
 BASE="$HOME"
 CODE_WORK_DIR="$BASE/code-insiders-data"
@@ -177,7 +177,6 @@ if no_exists "$LANGUAGE" ; then
 	exit 1 # If the combination not exists
 fi
 
-# TODO: made update only for language exts
 # TODO: show all available setups of launguage
 #
 # TODO: move this block to the launch area of the JS profile
@@ -188,9 +187,16 @@ fi
 # export ESLINT_NO_DEV_ERRORS=true
 # export DISABLE_ESLINT_PLUGIN=true
 
-# Main steps new new:
+declare -la list_exts_installed
+declare -la list_exts_required_base
+declare -la list_exts_required_specific
+declare -la list_exts_required_all
+declare -la list_exts_uninstall
+declare -la list_exts_install
+
+# Main steps:
 # 1. Get a list of all installed ext's 
-# 2. Get a list of required ext's for the base combo
+# 2. Get a list of all required bease ext's
 # 3. Get a list of required ext's for the specific combo
 # 4. Merge the base and specific lists of required exs's
 # 5. Get the difference between the installed and merged lists (uninstall list)
@@ -200,146 +206,98 @@ fi
 # 9. Install necessary extensions
 # 10. Launch the editor
 
-# TODO: Make check existing 'profile'.
-# Profile 'exp' not found.
-# Inpossible!!!
+declare -a run_options=()
+#run_options+=("--new-window")
+run_options+=()
+code_launcher "$WORKSPACE" "$PROFILE" run_options
 
-# crutch
-declare -a code_arguments=()
-#code_arguments+=("--new-window")
-code_arguments+=("$WORKSPACE")
-code_launcher "$PROFILE" code_arguments
-#sleep 5
-#PID_VSCODE="$(pidof code-insiders)"
-#echo "PID_VSCODE: $PID_VSCODE"
-# attempt:
-#function code_launcher_exp {
-#  local -n arg=$2
-#	if [[ \
-#  "$($CODE_BIN_FILE \
-#    --profile "$1" \
-#    --user-data-dir "$CODE_WORK_DATA_DIR" \
-#    --extensions-dir "$CODE_WORK_EXTENSIONS_DIR" \
-#		"${arg[@]}")" == "Profile '$1' not found." ]]; then
-#	echo "Something is wrong!"
-#	fi
-#}
 
-#declare -la options=() 
-#options+=("--log off")
-#options+=("--verbose")
-#options+=("--list-extensions")
-#code_launcher_exp "$PROFILE" options
-#if [[ "$(code_launcher_exp "$PROFILE" options)" == "Profile '$PROFILE' not found." ]]; then
-#echo "Something is wrong!"
-#else
-#	echo "Check"
-#fi
-#SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-#code_launcher "$PROFILE" options > "$SCRIPT_DIR/check_profile.txt"
-#exit
+get_list_exts_for "base" list_exts_required_base
+echo "Base ext's: $(get_length_array list_exts_required_base)"
+array_dump list_exts_required_base
 
-# 1. Get a list of all installed ext's 
-declare -la list_all_installed_exts
-get_list_all_installed_exts "$PROFILE" list_all_installed_exts
-number_of_installed_exts=$(get_length_array list_all_installed_exts)
-echo "Installed ext's: $number_of_installed_exts"
-
-if [[ $number_of_installed_exts -gt 0 ]]; then
-	array_dump list_all_installed_exts
-fi
-
-# 2. Get a list of required ext's for the base combo 
-declare -la list_of_required_base_extensions
-get_list_exts_for "base" list_of_required_base_extensions
-echo "Base ext's: $(get_length_array list_of_required_base_extensions)"
-array_dump list_of_required_base_extensions
-
-# 3. Get a list of required ext's for the specific combo
-declare -la list_of_required_specific_exts
-get_list_exts_for "$LANGUAGE" list_of_required_specific_exts
-echo "Ext's required for $LANGUAGE: $(get_length_array list_of_required_specific_exts)"
-array_dump list_of_required_specific_exts
-
-# 4. Merge the base and specific lists of required exs's
-declare -la list_all_required_exts
-merge_arrays list_of_required_base_extensions list_of_required_specific_exts list_all_required_exts
-echo "All required ext's: $(get_length_array list_all_required_exts)"
-array_dump list_all_required_exts
-
-#kill "$PID_VSCODE"
-#killall code-insiders
-#kill "$(pidof code-insiders)"
-
-# If there are no extensions installed,
-# then skip the steps to remove unnecessary extensions
-# and the steps to install the necessary extensions.
-# Just install the all required extensions.
-if [[ $number_of_installed_exts -eq 0 ]]; then
-  install_extensions $PROFILE list_all_required_exts
+if [[ "$LANGUAGE" == "base" ]]; then
+	list_exts_required_all=("${list_exts_required_base[@]}")
 else
-
-# 5. Get the difference between the installed and merged lists (uninstall list)
-declare -la list_uninstall_exts
-diff_lists list_all_installed_exts list_all_required_exts list_uninstall_exts
-number_exts_to_uninstall=$(get_length_array list_uninstall_exts)
-echo "Ext's will be removed: $number_exts_to_uninstall"
-
-# 6. Uninstall unnecessary extensions
-if [[ $number_exts_to_uninstall -gt 0 ]]; then
-	array_dump list_uninstall_exts
-	uninstall_extensions $PROFILE list_uninstall_exts
+  get_list_exts_for "$LANGUAGE" list_exts_required_specific
+  echo "Ext's required for $LANGUAGE: $(get_length_array list_exts_required_specific)"
+  array_dump list_exts_required_specific
+  merge_arrays list_exts_required_base list_exts_required_specific list_exts_required_all
 fi
 
-# 7. Update installed extensions
-update_extensions $PROFILE
+echo "All required ext's: $(get_length_array list_exts_required_all)"
+array_dump list_exts_required_all
 
-# 8. Get the difference between the merged and installed lists (install list)
-declare -la list_of_exts_to_install
-diff_lists list_all_required_exts list_all_installed_exts list_of_exts_to_install
-number_exts_to_install=$(get_length_array list_of_exts_to_install)
-echo "Ext's will be installed: $number_exts_to_install"
 
-# 9. Install necessary extensions
+get_list_exts_installed "$PROFILE" list_exts_installed
+number_installed_exts=$(get_length_array list_exts_installed)
+
+if [[ "$number_installed_exts" -gt 0 ]]; then
+
+  echo "Already installed ext's: $number_installed_exts"
+ 	array_dump list_exts_installed
+
+  # Make list ext's for uninstal
+  compare_lists list_exts_installed list_exts_required_all list_exts_uninstall
+  number_exts_to_uninstall=$(get_length_array list_exts_uninstall)
+    
+  # Uninstall unnecessary extensions
+  if [[ $number_exts_to_uninstall -gt 0 ]]; then
+    echo "Ext's will be removed: $number_exts_to_uninstall"
+	  array_dump list_exts_uninstall
+  	uninstall_extensions "$PROFILE" list_exts_uninstall
+	else
+		echo "No extensions to remove"
+  fi
+  
+	echo ""
+  update_extensions "$PROFILE"
+  echo "" 
+  # Make list ext's for install
+  compare_lists list_exts_required_all list_exts_installed list_exts_install
+
+else
+	list_exts_install=("${list_exts_required_all[@]}")
+fi
+
+number_exts_to_install=$(get_length_array list_exts_install)
+
+# Install necessary extensions
 if [[ $number_exts_to_install -gt 0 ]]; then
-	array_dump list_of_exts_to_install
-	install_extensions $PROFILE list_of_exts_to_install
+  echo "Ext's will be installed: $number_exts_to_install"
+	array_dump list_exts_install
+ 	install_extensions "$PROFILE" list_exts_install
+else
+	echo "No extinsions to install"
 fi
 
-fi
+case $LANGUAGE in
 
-#declare -a pids
-#echo "$PID_VSCODE"
-#mapfile -t pids < <( (echo "$PID_VSCODE") | tr ' ' '\n')
-#echo "PID'S:"
-#echo "${pids[@]}"
+base)
+	echo "This is basic configuration"
+	;;
 
-#killall -9 "$PID_VSCODE"
-#echo "PID"
-#echo "$PID_VSCODE"
-#for pid in $PID_VSCODE; do
-#	echo "$pid"
-#done
+bash)
+  echo "Are you ready to write shell scripts. Enjoy!"
+	;;
 
-#for pid in $(ps -ef | awk '/"$PID_VSCODE"/ {print $2}'); do kill -9 "$pid"; done
+*)
+	echo "All right!"
+	;;
 
-# 10. Launch the editor
-#declare -a launch_arguments
-#launch_arguments+=("--new-window")
-#launch_arguments+=("$WORKSPACE")
-#code_launcher "$PROFILE" launch_arguments
+esac
 
 exit
 
 # 3. Launch the editor with unnecessary extensions disabled
 #declare -la list_exts_for_language
-#get_list_extensions_for_ "$LANGUAGE" list_exts_for_language
+#get_list_exts_for "$LANGUAGE" list_exts_for_language
 #echo "List of ext's for $LANGUAGE: $(get_length_array list_exts_for_language)"
 #array_dump list_exts_for_language
 
 #default_combo="default"
 #declare -la list_default_exts
-#get_list_extensions_for_ "$default_combo" list_default_exts
+#get_list_exts_for "$default_combo" list_default_exts
 #echo "List default ext's: $(get_length_array list_default_exts)"
 #array_dump list_default_exts
 
@@ -349,12 +307,12 @@ exit
 #array_dump language_and_common_exts
 
 #declare -la list_installed_exts
-#get_list_all_installed_exts list_installed_exts
+#get_list_exts_installed list_installed_exts
 
 # 2.1 Get list extensions that are not needed for a specific language:
 #declare -la list_exts_for_disable
-#diff_lists list_installed_exts language_and_common_exts list_exts_for_disable
-# diff_lists total_list_exts language_and_common_exts list_exts_for_disable
+#compare_lists list_installed_exts language_and_common_exts list_exts_for_disable
+# compare_lists total_list_exts language_and_common_exts list_exts_for_disable
 #echo "List ext's for disable: $(get_length_array list_exts_for_disable)"
 #array_dump list_exts_for_disable
 #run_editor_with_extensions_disabled list_exts_for_disable
