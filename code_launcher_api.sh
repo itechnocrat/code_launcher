@@ -57,7 +57,8 @@ get_list_exts_installed() {
   options=("--list-extensions")
   # https://www.shellcheck.net/wiki/SC2207
   #mapfile -t list_installed < <( (request_installed_extensions "$1" "$2") | tr ' ' '\n')
-  mapfile -t list_installed < <( (code_launcher "" "$1" options) | tr ' ' '\n' | sort)
+  #mapfile -t list_installed < <( (code_launcher "" "$1" options) | tr ' ' '\n' | sort)
+  mapfile -t list_installed < <( (code_launcher "" "$1" options) | tr ' ' '\n')
   #mapfile -t list_installed < <( (print_array acc) | sort)
   return $?
 }
@@ -73,14 +74,14 @@ get_list_exts_installed() {
 #  All elements from all arrays 
 expand_2-dimensional_array() {
   local -n outer_arrays=$1
-  local -n new_array=$2
+  local -n result_array=$2
   local -n nested_array
   local element_nested_array
   for nested_array in "${outer_arrays[@]}"; do
     # echo "$nested_array"
     for element_nested_array in "${nested_array[@]}"; do
       # echo "$element_nested_array"
-      new_array+=("$element_nested_array")
+      result_array+=("$element_nested_array")
     done
   done
   return 
@@ -114,7 +115,8 @@ get_list_exts_for() {
   #get_sets acc combo
   mapfile -t resultat < <( (print_array acc) | sort | uniq)
   #mapfile -t resultat < <( (print_array acc) | sort)
-  return 0
+  acc=()
+  return
 }
 
 merge_arrays() {
@@ -122,13 +124,16 @@ merge_arrays() {
   local -n array_2=$2
   local -n array_3=$3
   local -a acc
-  for element in "${array_1[@]}"; do
-    acc+=("$element")
-  done
-  for element in "${array_2[@]}"; do
-    acc+=("$element")
-  done
-  mapfile -t array_3 < <( (print_array acc) | sort | uniq)
+  #for element in "${array_1[@]}"; do
+  #  acc+=("$element")
+  #done
+  #for element in "${array_2[@]}"; do
+  #  acc+=("$element")
+  #done
+  acc+=("${array_1[@]}")
+  acc+=("${array_2[@]}")
+  #mapfile -t array_3 < <( (print_array acc) | sort | uniq)
+  mapfile -t array_3 < <( (print_array acc) | uniq)
   return 
 }
 
@@ -206,7 +211,7 @@ update_extensions() {
 compare_lists() {
   local -n left_list=$1
   local -n right_list=$2
-  local -n differences_list=$3
+  local -n remainder_list=$3
   local -i matching=0
   local right_element
   local left_element
@@ -223,25 +228,12 @@ compare_lists() {
     # if an element from the first list does not match any element from the second list
     if [[ $matching == 0 ]]; then
       # add this item to difference list
-      differences_list+=("$left_element")
+      remainder_list+=("$left_element")
       # echo "$left_element"
     fi
     matching=0 # reset match flag
   done              # move to the next item from the first list
   return 
-}
-
-run_editor_with_extensions_disabled() {
-  local -n array_extensions=$1
-  local -a launch_arguments
-  for ext in "${array_extensions[@]}"; do
-    launch_arguments+=("--disable-extension")
-    launch_arguments+=("$ext")
-  done
-  launch_arguments+=("--new-window")
-  launch_arguments+=("$WORKSPACE")
-  code_launcher launch_arguments
-  return
 }
 
 get_length_array() {
@@ -278,42 +270,86 @@ array_dump() {
  #   key - as language_id
  # Returns:
  #   exit_code - yes or no language_id
-no_exists() {
-   local -g combos  
-   local check_key=$1
-   local -i return_code=0
-   #local key
-   for key in "${!combos[@]}"; do
-     if [[ "$check_key" == "$key" ]]; then
-       return_code=1
+exists() {
+   local key_being_checked=$1
+   local array_2x1=$2
+   local key
+   for key in "${!array_2x1[@]}"; do
+     if [[ "$key_being_checked" == "$key" ]]; then
+       return 1
      fi
    done
-   return $return_code
+   return 0
 }
 
 # all required ext's
-get_total_list_extensions() {
-  local -n top_result=$1
-  # local -g combos
-  local -n combo_name
-  local -a intermediate
-  # local ext=""
-  # local key
-  for combo_name in "${combos[@]}"; do
-    echo "${combo_name[@]}" 1 >&/dev/null
-    expand_2-dimensional_array combo_name intermediate 
-    #get_sets intermediate combo_name
+get_list_exts_full_db() {
+  local -n array_of_arrays=$1 
+  local -n return_value=$2
+  local -n arrays
+  local -a acc
+  local -a acc2
+  for arrays in "${array_of_arrays[@]}"; do
+    expand_2-dimensional_array arrays acc 
+    acc2+=("${acc[@]}")
   done
-  # mapfile -O 0 top_result < <(trick top_result | tr ' ' '\n' | sort | uniq -u | tr '\n' ' ')
-  # mapfile -t -O 0 top_result < <((trick intermediate) | tr ' ' '\n' | sort | uniq)
-  mapfile -t top_result < <( (print_array intermediate) | sort | uniq)
-  # echo ${#top_result[*]}
-  # echo "${top_result[@]}"
-  # print_list top_result
-  # if [[ ${#top_result[*]} == 0 ]]; then
-  #   exit 1
-  # fi
+  mapfile -t return_value < <( (print_array acc2) | sort | uniq)
   return 
 }
+
+run_editor_with_extensions_disabled() {
+  local -n array_extensions=$1
+  local -a launch_arguments
+  for ext in "${array_extensions[@]}"; do
+    launch_arguments+=("--disable-extension")
+    launch_arguments+=("$ext")
+  done
+  launch_arguments+=("--new-window")
+  launch_arguments+=("$WORKSPACE")
+  code_launcher launch_arguments
+  return
+}
+
+get_max_length_element() {
+ local -n array=$1
+ local -i max_length=1
+ local -i length
+ local element
+ for element in "${array[@]}"; do
+   length=${#element}
+   if [[ $length -gt $max_length ]]; then
+     max_length=$length
+   fi
+ done
+ printf "%i" $max_length
+}
+
+## TODO: convert to function
+#declare -i screen_width
+#declare -i number_columns
+#declare -i max_length_element
+#declare -i counter=0
+#declare -i i
+#declare element=""
+#
+#screen_width=$(/usr/bin/tput cols)
+#max_length_element=$(get_max_length_element list_exts_full_db)
+#number_columns=$(( screen_width/(max_length_element+2) ))
+#
+##echo "Diag"
+##echo "Screen width= $screen_width"
+##echo "Number columns= $number_columns"
+#
+#for element in "${list_exts_full_db[@]}"; do
+#	printf "%s" "$element"
+#	for i in $(seq 0 $(( max_length_element-${#element} )) ); do
+#		printf "%c" " "
+#	done
+#	counter+=1
+#	if [[ $number_columns == "$counter"  ]]; then
+#		printf "\n"
+#		counter=0
+#	fi
+#done
 
 return 

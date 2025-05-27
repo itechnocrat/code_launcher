@@ -148,7 +148,54 @@ assign_positional_args 1 "${_positionals[@]}"
 # printf "Value of '%s': %s\\n" 'language' "$_arg_language"
 # printf "Value of '%s': %s\\n" 'profile' "$_arg_profile"
 
-declare -i DEBUG="1"
+## Text colors
+#echo -e "\033[31mThis text is red\033[0m"
+#echo -e "\033[32mThis text is green\033[0m"
+#echo -e "\033[33mThis text is yellow\033[0m"
+#echo -e "\033[34mThis text is blue\033[0m"
+#echo -e "\033[35mThis text is magenta\033[0m"
+#echo -e "\033[36mThis text is cyan\033[0m"
+## Reset color at the end with \033[0m to prevent color bleeding
+
+## Define color variables for better readability
+RED='\033[31m'
+GREEN='\033[32m'
+YELLOW='\033[33m'
+BLUE='\033[34m'
+MAGENTA='\033[35m'
+CYAN='\033[36m'
+## Reset color
+RESET='\033[0m'
+
+## Using color variables
+#echo -e "${RED}This text is red${RESET}"
+#echo -e "${GREEN}This text is green${RESET}"
+#echo -e "${YELLOW}This text is yellow${RESET}"
+#echo -e "${BLUE}This text is blue${RESET}"
+#echo -e "${MAGENTA}This text is magenta${RESET}"
+#echo -e "${CYAN}This text is cyan${RESET}"
+
+## You can also mix colors in a single line
+#echo -e "This is ${RED}red${RESET}, this is ${GREEN}green${RESET}, and this is ${BLUE}blue${RESET}."
+
+## Text styles
+BOLD='\033[1m'
+UNDERLINE='\033[4m'
+## Background colors
+BG_RED='\033[41m'
+BG_GREEN='\033[42m'
+BG_YELLOW='\033[43m'
+
+## Examples with styles
+#echo -e "${BOLD}This text is bold${RESET}"
+#echo -e "${UNDERLINE}This text is underlined${RESET}"
+#echo -e "${RED}${BOLD}This text is bold and red${RESET}"
+
+## Examples with background colors
+#echo -e "${BG_RED}This has a red background${RESET}"
+#echo -e "${BG_GREEN}${BLUE}Blue text on green background${RESET}"
+
+declare -i DEBUG=1
 
 WORKSPACE="."
 
@@ -172,20 +219,12 @@ source "$PATH_TO/code_launcher_db"
 # shellcheck source=/dev/null
 source "$PATH_TO/code_launcher_api"
 
-if no_exists "$LANGUAGE" ; then
+if ! exists "$LANGUAGE" combos; then
 	echo "Ooops! '$LANGUAGE' configuration does not exist!"
 	exit 1 # If the combination not exists
 fi
 
 # TODO: show all available setups of launguage
-#
-# TODO: move this block to the launch area of the JS profile
-# export NODE_ENV=production
-# export BABEL_ENV=production
-# export NODE_ENV=development
-# export BABEL_ENV=development
-# export ESLINT_NO_DEV_ERRORS=true
-# export DISABLE_ESLINT_PLUGIN=true
 
 declare -la list_exts_installed
 declare -la list_exts_required_base
@@ -193,8 +232,10 @@ declare -la list_exts_required_specific
 declare -la list_exts_required_all
 declare -la list_exts_uninstall
 declare -la list_exts_install
+declare -la list_exts_full_db
 
 # Main steps:
+# 0. Launch the editor
 # 1. Get a list of all installed ext's 
 # 2. Get a list of all required bease ext's
 # 3. Get a list of required ext's for the specific combo
@@ -204,7 +245,6 @@ declare -la list_exts_install
 # 7. Update installed extensions
 # 8. Get the difference between the merged and installed lists (install list)
 # 9. Install necessary extensions
-# 10. Launch the editor
 
 declare -a run_options=()
 #run_options+=("--new-window")
@@ -213,7 +253,7 @@ code_launcher "$WORKSPACE" "$PROFILE" run_options
 
 
 get_list_exts_for "base" list_exts_required_base
-echo "Base ext's: $(get_length_array list_exts_required_base)"
+echo -e "${BOLD}${CYAN}Base ext's${RESET}: ${GREEN}$(get_length_array list_exts_required_base)${RESET}"
 array_dump list_exts_required_base
 
 if [[ "$LANGUAGE" == "base" ]]; then
@@ -269,55 +309,44 @@ if [[ $number_exts_to_install -gt 0 ]]; then
  	install_extensions "$PROFILE" list_exts_install
 else
 	echo "No extinsions to install"
+	echo ""
 fi
+
+get_list_exts_full_db combos list_exts_full_db
+echo "List of exts for the entire db: $(get_length_array list_exts_full_db)"
+array_dump list_exts_full_db 
 
 case $LANGUAGE in
 
 base)
 	echo "This is basic configuration"
+	echo ""
 	;;
 
 bash)
   echo "Are you ready to write shell scripts. Enjoy!"
+	echo ""
+	;;
+
+jsts)
+  export NODE_ENV=production
+  export BABEL_ENV=production
+  export NODE_ENV=development
+  export BABEL_ENV=development
+  export ESLINT_NO_DEV_ERRORS=true
+  export DISABLE_ESLINT_PLUGIN=true
+  echo "Are you ready to write js and ts scripts. Enjoy!"
+  echo ""
 	;;
 
 *)
 	echo "All right!"
+	echo ""
 	;;
 
 esac
 
 exit
-
-# 3. Launch the editor with unnecessary extensions disabled
-#declare -la list_exts_for_language
-#get_list_exts_for "$LANGUAGE" list_exts_for_language
-#echo "List of ext's for $LANGUAGE: $(get_length_array list_exts_for_language)"
-#array_dump list_exts_for_language
-
-#default_combo="default"
-#declare -la list_default_exts
-#get_list_exts_for "$default_combo" list_default_exts
-#echo "List default ext's: $(get_length_array list_default_exts)"
-#array_dump list_default_exts
-
-#declare -la language_and_common_exts
-#merge_arrays list_exts_for_language list_default_exts language_and_common_exts
-#echo "Language and common ext's: $(get_length_array language_and_common_exts)"
-#array_dump language_and_common_exts
-
-#declare -la list_installed_exts
-#get_list_exts_installed list_installed_exts
-
-# 2.1 Get list extensions that are not needed for a specific language:
-#declare -la list_exts_for_disable
-#compare_lists list_installed_exts language_and_common_exts list_exts_for_disable
-# compare_lists total_list_exts language_and_common_exts list_exts_for_disable
-#echo "List ext's for disable: $(get_length_array list_exts_for_disable)"
-#array_dump list_exts_for_disable
-#run_editor_with_extensions_disabled list_exts_for_disable
-
-#exit
 
 # ^^^  TERMINATE YOUR CODE BEFORE THE BOTTOM ARGBASH MARKER  ^^^
 
