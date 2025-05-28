@@ -499,6 +499,14 @@ declare -la set_spelling=(
   streetsidesoftware.code-spell-checker-russian
 )
 
+declare -la set_csv=(
+  jeff-hykin.better-csv-syntax
+)
+
+declare -la set_toml=(
+  tamasfe.even-better-toml
+)
+
 declare -la set_path_processing=(
   christian-kohler.path-intellisense
   ionutvmi.path-autocomplete
@@ -531,12 +539,10 @@ declare -la set_uml=(
 
 declare -la set_utilities=(
   alefragnani.project-manager
+  EditorConfig.EditorConfig
   #Tyriar.vscode-terminal-here
   #robole.profile-status
   #natqe.reload
-  #jeff-hykin.better-csv-syntax
-  #tamasfe.even-better-toml
-  #EditorConfig.EditorConfig
   #pomdtr.excalidraw-editor
   #hediet.vscode-drawio
   #adpyke.codesnap
@@ -556,8 +562,8 @@ declare -la set_special_extensions=(
 # Combination of sets (combo)
 
 declare -a combo_base=(
-  #set_docker
-  #set_remote_development
+  #set_docker # move out
+  #set_remote_development # move out
   #set_git
   #set_path_processing
   #set_organizing_comments_todos_bookmarks
@@ -569,17 +575,13 @@ declare -a combo_base=(
   #
   set_utilities
   set_themes
-  #set_better_syntax_themes # move to relevant set
   set_icons
-  #set_sql
   #set_special_extensions
   #set_dotnet_runtime # ! temporary !
 )
 
 declare -a combo_bash=(
   set_bash
-  #set_better_syntax_themes
-  #set_remote_development
 )
 
 declare -a combo_pascal=(

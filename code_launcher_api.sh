@@ -63,30 +63,6 @@ get_list_exts_installed() {
   return $?
 }
 
-# Expands two-dimensional array into one.
-# Usage:
-# expand_2-dimensional_array arg result
-# Arguments:
-#   arg @ array of arrays
-# Outputs:
-#   result @ arrays
-# Returns:
-#  All elements from all arrays 
-expand_2-dimensional_array() {
-  local -n outer_arrays=$1
-  local -n result_array=$2
-  local -n nested_array
-  local element_nested_array
-  for nested_array in "${outer_arrays[@]}"; do
-    # echo "$nested_array"
-    for element_nested_array in "${nested_array[@]}"; do
-      # echo "$element_nested_array"
-      result_array+=("$element_nested_array")
-    done
-  done
-  return 
-}
-
 print_array() {
   local -n array=$1
   for item in "${array[@]}"; do
@@ -94,48 +70,82 @@ print_array() {
   done
 }
 
+# Expands two-dimensional array into one.
+# Usage: expand_array_x2 array_x2 array
+# Arguments:
+#   array_x2
+# Outputs:
+#   array
+# Returns:
+expand_array_x2() {
+  local -n in_array_x2=$1
+  local -n out_array=$2
+  local -n array
+  local element
+  for array in "${in_array_x2[@]}"; do
+    for element in "${array[@]}"; do
+      out_array+=("$element")
+    done
+  done
+  return 
+}
+
 # Wrapper for get_sets
 # Prepares a request and accepts the result
 # Usage:
-# get_list_exts_fo key array
+# get_list_exts_fo key associated_array array
 # Arguments:
-# key       @ string Language name as key of combos array
-# array     @ ref to array of all required extensions
-# Outputs:  @ array
-# Returns:  Array of required extensions
-# TODO: remove global variable, argument instead
+# key                 @ string Language name as key of combos array
+# associated_array    @ ref to array
+# Outputs:            @ array
+# Returns:  
 get_list_exts_for() {
-  local -g combos
   local key="$1"
-  local -n combo
-  local -n resultat=$2
+  local -n input_array_x3=$2
+  local -n output_array=$3
+  local -n array_x2
   local -a acc
-  combo="${combos[$key]}"
-  expand_2-dimensional_array combo acc 
-  #get_sets acc combo
-  mapfile -t resultat < <( (print_array acc) | sort | uniq)
-  #mapfile -t resultat < <( (print_array acc) | sort)
+  array_x2="${input_array_x3[$key]}"
+  expand_array_x2 array_x2 acc 
+  #expand_array_x2 array_x2 output_array 
+  #mapfile -t output_array < <( (print_array acc) | sort | uniq)
+  mapfile -t output_array < <( (print_array acc) | uniq)
   acc=()
-  return
 }
 
-merge_arrays() {
-  local -n array_1=$1
-  local -n array_2=$2
-  local -n array_3=$3
+# all required ext's
+expand_array_x3() {
+  local -n input_array_x3=$1 
+  local -n result_array=$2
+  local -n array_x2
   local -a acc
-  #for element in "${array_1[@]}"; do
-  #  acc+=("$element")
-  #done
-  #for element in "${array_2[@]}"; do
-  #  acc+=("$element")
-  #done
-  acc+=("${array_1[@]}")
-  acc+=("${array_2[@]}")
-  #mapfile -t array_3 < <( (print_array acc) | sort | uniq)
-  mapfile -t array_3 < <( (print_array acc) | uniq)
+  #local -a acc2
+  for array_x2 in "${input_array_x3[@]}"; do
+    expand_array_x2 array_x2 acc 
+    #acc2+=("${acc[@]}")
+  done
+  #mapfile -t result_array < <( (print_array acc2) | sort | uniq)
+  mapfile -t result_array < <( (print_array acc) | uniq)
   return 
 }
+
+#merge_arrays() {
+#  local -n array_1=$1
+#  local -n array_2=$2
+#  local -n array_3=$3
+#  local -a acc
+#  #for element in "${array_1[@]}"; do
+#  #  acc+=("$element")
+#  #done
+#  #for element in "${array_2[@]}"; do
+#  #  acc+=("$element")
+#  #done
+#  array_3=("${array_1[@]}" "${array_2[@]}")
+#  #array_3+=("${array_2[@]}")
+#  #mapfile -t array_3 < <( (print_array acc) | sort | uniq)
+#  #mapfile -t array_3 < <( (print_array acc) | uniq)
+#  return 
+#}
 
 install_extensions() {
   local -n array_extensions=$2
@@ -154,6 +164,7 @@ install_extensions() {
     install_options=()
     #counter+=1
   done
+  echo
   #code_launcher "" "$1" install_options
   return
 }
@@ -172,21 +183,24 @@ uninstall_extensions() {
   local -n list_extensions=$2
   local -a uninstall_options
   local -a reverse_list_extensions
-  local -i counter=1
+  #local -i counter=1
   mapfile -t reverse_list_extensions < <( (print_array list_extensions) | sort -r)
+  #mapfile -t reverse_list_extensions < <( (print_array list_extensions) | sort)
+  #echo "${reverse_list_extensions[@]}"
   for ext in "${reverse_list_extensions[@]}"; do
-    echo "$counter"
+    #echo "$counter"
     uninstall_options+=("--uninstall-extension")
     uninstall_options+=("$ext")
-    echo "${uninstall_options[@]}"
+    #echo "${uninstall_options[@]}"
     code_launcher "" "$1" uninstall_options
     uninstall_options=()
-    counter+=1
+    #counter+=1
   done
   #array_dump reverse_list_extensions
   #echo "opt:"
   #array_dump uninstall_options
   #code_launcher "" "$1" uninstall_options
+  echo
   return 
 }
 
@@ -235,66 +249,138 @@ compare_lists() {
   done              # move to the next item from the first list
   return 
 }
+# Returns:
+diff_lists() {
+  local -n l_list=$1
+  local -n r_list=$2
+  local -n l_list_remainder=$3
+  local -n r_list_remainder=$4
+  local r_element
+  local l_element
+  local -i matching=0
 
-get_length_array() {
-  local -n array=$1
-  echo ${#array[*]}
-}
-
-array_dump() {
-  local -ig DEBUG
-    if [[ $DEBUG == 1 ]]; then
-      local -n array=$1
-      echo ""
-      echo "${array[*]}"
-      echo ""
+  for l_element in "${l_list[@]}"; do
+    for r_element in "${r_list[@]}"; do
+      if [[ "$l_element" == "$r_element" ]]; then
+        matching=1
+        break
+      fi
+    done
+    if [[ $matching == 0 ]]; then
+      l_list_remainder+=("$l_element")
+      # echo "$l_element"
     fi
+    matching=0
+  done
+
+  matching=0
+  for r_element in "${r_list[@]}"; do
+    for l_element in "${l_list[@]}"; do
+      if [[ "$r_element" == "$l_element" ]]; then
+        matching=1
+        break
+      fi
+    done
+    if [[ $matching == 0 ]]; then
+      r_list_remainder+=("$r_element")
+      # echo "$r_element"
+    fi
+    matching=0
+  done
+
+  return 
 }
 
-#log() {
-#  locale -g DEBUG
-#  if [[ -v DEBUG ]]; then
-#  local -n array=$1
-#  echo
-#  # call and echo get_length_array
-#  # call and echo array_dump
-#  echo
-#  fi
+#get_length_array() {
+#  local -n in_array=$1
+#  echo ${#in_array[*]}
 #}
 
- # Check existence of key in associated array combos
+#array_dump() {
+#  local -ig DEBUG
+#    if [[ $DEBUG == 1 ]]; then
+#      local -n array=$1
+#      echo ""
+#      echo "${array[*]}"
+#      echo ""
+#    fi
+#}
+
+get_max_length_element() {
+ local -n input_array=$1
+ local -i max_length=1
+ local -i length
+ local element
+ for element in "${input_array[@]}"; do
+   length=${#element}
+   if [[ $length -gt $max_length ]]; then
+     max_length=$length
+   fi
+ done
+ printf "%i" $max_length
+}
+
+log() {
+  local -ig DEBUG
+  if [[ $DEBUG == 1 ]]; then
+    local -n list=$1
+    local msg=$2
+    echo -e "${YELLOW}$msg${RESET} (${YELLOW}${#list[*]}${RESET}):"
+    #
+    echo "${list[@]}"
+    #echo ""
+    #
+    #local -a tmp_array
+    #mapfile -t tmp_array < <( (print_array list) | sort -r)
+    #echo "${tmp_array[@]}"
+    #local -i screen_width
+    #local -i number_columns
+    #local -i max_length_element
+    #local -i counter=0
+    #local -i i
+    #local element=""
+
+    #screen_width=$(/usr/bin/tput cols)
+    #max_length_element=$(get_max_length_element list)
+    ##number_columns=$(( screen_width/(max_length_element+2) ))
+    #number_columns=2
+    ##echo "Diag"
+    ##echo "Screen width= $screen_width"
+    ##echo "Number columns= $number_columns"
+
+    #for element in "${list[@]}"; do
+    #	printf "%s" "$element"
+    #	for i in $(seq 0 $(( max_length_element-${#element} )) ); do
+    #		printf "%c" " "
+    #	done
+    #	counter+=1
+    #	if [[ $number_columns == "$counter"  ]]; then
+    #		printf "\n"
+    #		counter=0
+    #	fi
+    #done
+    #printf "\n"
+  fi
+}
+
+ # Check existence of key in associated array
  # Usage:
- # no_exists key
+ # exists key array
  # Arguments:
- #   associated_array - combo sets
- #   key - as language_id
+ #   key   - string is language_id
+ #   array - associated array
  # Returns:
- #   exit_code - yes or no language_id
+ #   exit_code - 1 - yes or 0 - no language_id
 exists() {
    local key_being_checked=$1
-   local array_2x1=$2
+   local array_x3=$2
    local key
-   for key in "${!array_2x1[@]}"; do
+   for key in "${!array_x3[@]}"; do
      if [[ "$key_being_checked" == "$key" ]]; then
        return 1
      fi
    done
    return 0
-}
-
-# all required ext's
-get_list_exts_full_db() {
-  local -n array_of_arrays=$1 
-  local -n return_value=$2
-  local -n arrays
-  local -a acc
-  local -a acc2
-  for arrays in "${array_of_arrays[@]}"; do
-    expand_2-dimensional_array arrays acc 
-    acc2+=("${acc[@]}")
-  done
-  mapfile -t return_value < <( (print_array acc2) | sort | uniq)
-  return 
 }
 
 run_editor_with_extensions_disabled() {
@@ -309,47 +395,5 @@ run_editor_with_extensions_disabled() {
   code_launcher launch_arguments
   return
 }
-
-get_max_length_element() {
- local -n array=$1
- local -i max_length=1
- local -i length
- local element
- for element in "${array[@]}"; do
-   length=${#element}
-   if [[ $length -gt $max_length ]]; then
-     max_length=$length
-   fi
- done
- printf "%i" $max_length
-}
-
-## TODO: convert to function
-#declare -i screen_width
-#declare -i number_columns
-#declare -i max_length_element
-#declare -i counter=0
-#declare -i i
-#declare element=""
-#
-#screen_width=$(/usr/bin/tput cols)
-#max_length_element=$(get_max_length_element list_exts_full_db)
-#number_columns=$(( screen_width/(max_length_element+2) ))
-#
-##echo "Diag"
-##echo "Screen width= $screen_width"
-##echo "Number columns= $number_columns"
-#
-#for element in "${list_exts_full_db[@]}"; do
-#	printf "%s" "$element"
-#	for i in $(seq 0 $(( max_length_element-${#element} )) ); do
-#		printf "%c" " "
-#	done
-#	counter+=1
-#	if [[ $number_columns == "$counter"  ]]; then
-#		printf "\n"
-#		counter=0
-#	fi
-#done
 
 return 

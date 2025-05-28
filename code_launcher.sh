@@ -167,17 +167,6 @@ CYAN='\033[36m'
 ## Reset color
 RESET='\033[0m'
 
-## Using color variables
-#echo -e "${RED}This text is red${RESET}"
-#echo -e "${GREEN}This text is green${RESET}"
-#echo -e "${YELLOW}This text is yellow${RESET}"
-#echo -e "${BLUE}This text is blue${RESET}"
-#echo -e "${MAGENTA}This text is magenta${RESET}"
-#echo -e "${CYAN}This text is cyan${RESET}"
-
-## You can also mix colors in a single line
-#echo -e "This is ${RED}red${RESET}, this is ${GREEN}green${RESET}, and this is ${BLUE}blue${RESET}."
-
 ## Text styles
 BOLD='\033[1m'
 UNDERLINE='\033[4m'
@@ -186,11 +175,19 @@ BG_RED='\033[41m'
 BG_GREEN='\033[42m'
 BG_YELLOW='\033[43m'
 
+## Using color variables
+#echo -e "${RED}This text is red${RESET}"
+#echo -e "${GREEN}This text is green${RESET}"
+#echo -e "${YELLOW}This text is yellow${RESET}"
+#echo -e "${BLUE}This text is blue${RESET}"
+#echo -e "${MAGENTA}This text is magenta${RESET}"
+#echo -e "${CYAN}This text is cyan${RESET}"
+## You can also mix colors in a single line
+#echo -e "This is ${RED}red${RESET}, this is ${GREEN}green${RESET}, and this is ${BLUE}blue${RESET}."
 ## Examples with styles
 #echo -e "${BOLD}This text is bold${RESET}"
 #echo -e "${UNDERLINE}This text is underlined${RESET}"
 #echo -e "${RED}${BOLD}This text is bold and red${RESET}"
-
 ## Examples with background colors
 #echo -e "${BG_RED}This has a red background${RESET}"
 #echo -e "${BG_GREEN}${BLUE}Blue text on green background${RESET}"
@@ -207,17 +204,18 @@ else
 	PROFILE="$_arg_profile"
 fi
 
+#TODO: Move to api
 BASE="$HOME"
 CODE_WORK_DIR="$BASE/code-insiders-data"
 CODE_WORK_DATA_DIR="$CODE_WORK_DIR/common"
 CODE_WORK_EXTENSIONS_DIR="$CODE_WORK_DIR/extensions"
 CODE_BIN_FILE="/opt/visual-studio-code-insiders/bin/code-insiders"
 
-PATH_TO="$HOME/.local/share/code_launcher"
+PATH_TO_STUFF="$HOME/.local/share/code_launcher"
 # shellcheck source=/dev/null
-source "$PATH_TO/code_launcher_db"
+source "$PATH_TO_STUFF/code_launcher_db"
 # shellcheck source=/dev/null
-source "$PATH_TO/code_launcher_api"
+source "$PATH_TO_STUFF/code_launcher_api"
 
 if ! exists "$LANGUAGE" combos; then
 	echo "Ooops! '$LANGUAGE' configuration does not exist!"
@@ -229,10 +227,11 @@ fi
 declare -la list_exts_installed
 declare -la list_exts_required_base
 declare -la list_exts_required_specific
-declare -la list_exts_required_all
+declare -la list_exts_required
 declare -la list_exts_uninstall
 declare -la list_exts_install
 declare -la list_exts_full_db
+declare -a run_options
 
 # Main steps:
 # 0. Launch the editor
@@ -246,86 +245,86 @@ declare -la list_exts_full_db
 # 8. Get the difference between the merged and installed lists (install list)
 # 9. Install necessary extensions
 
-declare -a run_options=()
 #run_options+=("--new-window")
-run_options+=()
+#run_options+=()
 code_launcher "$WORKSPACE" "$PROFILE" run_options
 
 
-get_list_exts_for "base" list_exts_required_base
-echo -e "${BOLD}${CYAN}Base ext's${RESET}: ${GREEN}$(get_length_array list_exts_required_base)${RESET}"
-array_dump list_exts_required_base
+get_list_exts_for "base" combos list_exts_required_base
+log list_exts_required_base "Base ext's"
 
 if [[ "$LANGUAGE" == "base" ]]; then
-	list_exts_required_all=("${list_exts_required_base[@]}")
+	list_exts_required=("${list_exts_required_base[@]}")
 else
-  get_list_exts_for "$LANGUAGE" list_exts_required_specific
-  echo "Ext's required for $LANGUAGE: $(get_length_array list_exts_required_specific)"
-  array_dump list_exts_required_specific
-  merge_arrays list_exts_required_base list_exts_required_specific list_exts_required_all
+  get_list_exts_for "$LANGUAGE" combos list_exts_required_specific
+	log list_exts_required_specific "Ext's required for $LANGUAGE"
+  #merge_arrays list_exts_required_base list_exts_required_specific list_exts_required
+	list_exts_required=("${list_exts_required_base[@]}" "${list_exts_required_specific[@]}")
 fi
 
-echo "All required ext's: $(get_length_array list_exts_required_all)"
-array_dump list_exts_required_all
+log list_exts_required "All required ext's"
 
 
 get_list_exts_installed "$PROFILE" list_exts_installed
-number_installed_exts=$(get_length_array list_exts_installed)
+#number_installed_exts=$(get_length_array list_exts_installed)
 
-if [[ "$number_installed_exts" -gt 0 ]]; then
+#if [[ "$number_installed_exts" -gt 0 ]]; then
+if [[ ${#list_exts_installed[*]} -gt 0 ]]; then
 
-  echo "Already installed ext's: $number_installed_exts"
- 	array_dump list_exts_installed
+  log list_exts_installed "Already installed ext's"
 
-  # Make list ext's for uninstal
-  compare_lists list_exts_installed list_exts_required_all list_exts_uninstall
-  number_exts_to_uninstall=$(get_length_array list_exts_uninstall)
+	# Make unistall and install lists ext's
+  diff_lists list_exts_required list_exts_installed list_exts_install list_exts_uninstall
     
   # Uninstall unnecessary extensions
-  if [[ $number_exts_to_uninstall -gt 0 ]]; then
-    echo "Ext's will be removed: $number_exts_to_uninstall"
-	  array_dump list_exts_uninstall
-  	uninstall_extensions "$PROFILE" list_exts_uninstall
+  if [[ ${#list_exts_uninstall[*]} -gt 0 ]]; then
+	  log list_exts_uninstall "Ext's will be removed"
+   	echo -ne "${RED}"
+   	uninstall_extensions "$PROFILE" list_exts_uninstall
+    echo -ne "${RESET}"
 	else
-		echo "No extensions to remove"
+		echo -e "${YELLOW}"
+		echo -n "No extensions to remove"
+		echo -e "${RESET}"
+		#printf "\n"
   fi
   
-	echo ""
+  echo -ne "${YELLOW}"
   update_extensions "$PROFILE"
-  echo "" 
-  # Make list ext's for install
-  compare_lists list_exts_required_all list_exts_installed list_exts_install
+  echo -ne "${RESET}"
+	#printf "\n"
 
 else
-	list_exts_install=("${list_exts_required_all[@]}")
+	list_exts_install=("${list_exts_required[@]}")
 fi
 
-number_exts_to_install=$(get_length_array list_exts_install)
+#number_exts_to_install=$(get_length_array list_exts_install)
 
 # Install necessary extensions
-if [[ $number_exts_to_install -gt 0 ]]; then
-  echo "Ext's will be installed: $number_exts_to_install"
-	array_dump list_exts_install
+#if [[ $number_exts_to_install -gt 0 ]]; then
+if [[ ${#list_exts_install[@]} -gt 0 ]]; then
+	log list_exts_install "Ext's will be installed"
+	echo -ne "${GREEN}"
  	install_extensions "$PROFILE" list_exts_install
+  echo -ne "${RESET}"
 else
-	echo "No extinsions to install"
-	echo ""
+	echo -e "${YELLOW}"
+	echo -n "No extinsions to install"
+  echo -ne "${RESET}"
+	printf "\n"
 fi
 
-get_list_exts_full_db combos list_exts_full_db
-echo "List of exts for the entire db: $(get_length_array list_exts_full_db)"
-array_dump list_exts_full_db 
+#expand_array_x3 combos list_exts_full_db
+#log list_exts_full_db "List of exts for the entire db" 
 
 case $LANGUAGE in
 
 base)
 	echo "This is basic configuration"
-	echo ""
 	;;
 
 bash)
   echo "Are you ready to write shell scripts. Enjoy!"
-	echo ""
 	;;
 
 jsts)
@@ -336,12 +335,10 @@ jsts)
   export ESLINT_NO_DEV_ERRORS=true
   export DISABLE_ESLINT_PLUGIN=true
   echo "Are you ready to write js and ts scripts. Enjoy!"
-  echo ""
 	;;
 
 *)
 	echo "All right!"
-	echo ""
 	;;
 
 esac
