@@ -387,6 +387,7 @@ declare -la set_themes=(
 declare -la set_icons=(
   # by download rating
   PKief.material-icon-theme # the best
+  #Icons # by Mhammed Talhaouy # fo check
   # vscode-icons-team.vscode-icons
   # equinusocio.vsc-material-theme-icons
   #
@@ -540,6 +541,7 @@ declare -la set_uml=(
 declare -la set_utilities=(
   alefragnani.project-manager
   EditorConfig.EditorConfig
+  #vscode-pdf # by tomoki1207
   #Tyriar.vscode-terminal-here
   #robole.profile-status
   #natqe.reload
