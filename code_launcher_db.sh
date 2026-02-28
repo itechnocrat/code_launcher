@@ -1,10 +1,4 @@
-#! /usr/bin/bash
-
-#
-# license ...
-#
-
-# https://habr.com/ru/articles/583320/
+# shellcheck shell=bash
 declare -la set_bash=(
   ## woozy-masta.shell-script-ide
   ## consist of:
@@ -142,7 +136,7 @@ declare -la set_nodejs=(
   ms-edgedevtools.vscode-edge-devtools
   christian-kohler.npm-intellisense
   humao.rest-client
-  redhat.vscode-yaml
+  # redhat.vscode-yaml # move to
 )
 # This profile comes with the following settings:
 # "editor.formatOnPaste": true,
@@ -182,7 +176,7 @@ declare -la set_python=(
   # ms-toolsai.jupyter-renderers
   # ms-toolsai.vscode-jupyter-cell-tags
   # ms-toolsai.vscode-jupyter-slideshow
-  # ms-toolsai.vscode-jupyter-powertoys #experimental 
+  # ms-toolsai.vscode-jupyter-powertoys #experimental
   #
   # ms-python.vscode-python-envs #(depend ms-python.python)
   # ms-python.vscode-pylance
@@ -239,7 +233,7 @@ declare -la set_java=(
 declare -la set_csharp=(
   ms-dotnettools.csharp
   ms-dotnettools.csdevkit
-  #ms-dotnettools.vscode-dotnet-runtime # in combo_csharp
+  #ms-dotnettools.vscode-dotnet-runtime # in use_case_csharp
 )
 
 # for:
@@ -257,15 +251,15 @@ declare -la set_dotnet_runtime=(
 # set_java
 declare -la set_intellicode=(
   # VisualStudioExptTeam.vscodeintellicode
-  VisualStudioExptTeam.vscodeintellicode-insiders
+  # VisualStudioExptTeam.vscodeintellicode-insiders # deprecated
 )
 
 # for:
 # set_jsts
 # set_python
 declare -la set_intellicode_completions_and_api_examples=(
-  VisualStudioExptTeam.vscodeintellicode-completions
-  VisualStudioExptTeam.intellicode-api-usage-examples
+  # VisualStudioExptTeam.vscodeintellicode-completions # deprecated
+  # VisualStudioExptTeam.intellicode-api-usage-examples # deprecated
 )
 
 declare -la set_php=(
@@ -339,9 +333,12 @@ declare -la set_objectivecpp=(
 )
 
 declare -la set_docker=(
-  # Move all to set_remote_development ?
-  ms-azuretools.vscode-docker
+  #ms-azuretools.vscode-docker # Docker
+  # or
+  ms-azuretools.vscode-containers # Container Tools
+  #
   exiasr.hadolint
+  #
   jeff-hykin.better-dockerfile-syntax
   ## Use a theme like one of the following
   ## to benefit from the changes:
@@ -372,7 +369,6 @@ declare -la set_git=(
   codezombiech.gitignore
   #GitHub.remotehub
   #GitHub.codespaces
-  #GitHub.copilot
 )
 
 declare -la set_themes=(
@@ -443,13 +439,12 @@ declare -la set_better_syntax_themes=(
 )
 
 ## Doc Writer Profile Template
-## <https://code.visualstudio.com/docs/editor/profiles\
-## #_doc-writer-profile-template>
+## <https://code.visualstudio.com/docs/editor/profiles_doc-writer-profile-template>
 declare -la set_docwriter=(
   ms-vscode.wordcount
   johnpapa.read-time
   xshrim.txt-syntax
- # Doc Writer Profile Template
+  # Doc Writer Profile Template
   # streetsidesoftware.code-spell-checker #:\
   # already in set_spelling
   # bierner.markdown-checkbox
@@ -486,12 +481,12 @@ declare -la set_markdown=(
   # bierner.markdown-preview-github-styles
   # bierner.markdown-mermaid
   # bierner.markdown-yaml-preamble
-  # DavidAnson.vscode-markdownlint
+  DavidAnson.vscode-markdownlint
   #
   # shd101wyy.markdown-preview-enhanced
   #
   # DougFinke.vscode-pandoc # deprecated
-  # ChrisChinchilla.vscode-pandoc
+  ChrisChinchilla.vscode-pandoc
   # zaaack.markdown-editor
 )
 
@@ -541,6 +536,7 @@ declare -la set_uml=(
 declare -la set_utilities=(
   alefragnani.project-manager
   EditorConfig.EditorConfig
+  redhat.vscode-yaml
   #vscode-pdf # by tomoki1207
   #Tyriar.vscode-terminal-here
   #robole.profile-status
@@ -559,11 +555,44 @@ declare -la set_special_extensions=(
   WakaTime.vscode-wakatime
 )
 
+declare -la set_ai=(
+  Continue.continue
+  #
+  # CodeGPT: total proprietary - crap, don't touch
+  # DanielSanMedium.dscodegpt
+  #
+  # Cline: total proprietary - crap, don't touch
+  # saoudrizwan.claude-dev
+  #
+  # Local AI https://localai.io/
+  # Local AI - This is a local server with its own model library.
+  #
+  # Twinny https://github.com/twinnydotdev/twinny
+  # По умолчанию слабые модели, а как изменить их - непонятно.
+  # rjmacarthy.twinny
+  #
+  # RooVeterinaryInc.roo-cline
+  # глючит, ответы от LLM калечит
+  #
+  # Ollama Assistant
+  # josephgodwinke.vscode-ollama-assistant
+  # примитивное говно
+  #
+  # Tabby # Do not test yet
+  # TabbyML.vscode-tabby
+  # Не работает, не подсоединяется к серверу
+  #
+  # GitHub.copilot-chat
+  # ms-windows-ai-studio.windows-ai-studio
+  # ms-azuretools.vscode-azureresourcegroups
+  # teamsdevapp.vscode-ai-foundry
+)
+
 # End sets
 
 # Combination of sets (combo)
 
-declare -a combo_base=(
+declare -a use_case_base=(
   #set_docker # move out
   #set_remote_development # move out
   #set_git
@@ -571,122 +600,123 @@ declare -a combo_base=(
   #set_organizing_comments_todos_bookmarks
   #set_json
   #
-  #set_spelling
-  #set_markdown
+  set_ai
+  set_spelling
+  set_markdown
   #set_docwriter
   #
   set_utilities
   set_themes
   set_icons
-  #set_special_extensions
+  set_special_extensions
   #set_dotnet_runtime # ! temporary !
 )
 
-declare -a combo_bash=(
+declare -a use_case_bash=(
   set_bash
 )
 
-declare -a combo_pascal=(
+declare -a use_case_pascal=(
   set_pascal
 )
 
-declare -a combo_cpp=(
+declare -a use_case_cpp=(
   set_cpp
 )
 
-declare -a combo_web_front_end=(
+declare -a use_case_web_front_end=(
   set_html
   set_css
   #set_jsts
-  #set_prettier 
+  #set_prettier
 )
 
-declare -a combo_web_back_end=(
+declare -a use_case_web_back_end=(
   set_jsts
   # set_dotnet_runtime
-  set_intellicode
-  set_intellicode_completions_and_api_examples
+  #set_intellicode
+  #set_intellicode_completions_and_api_examples
   set_nodejs
-  set_prettier 
+  set_prettier
 )
 
-declare -a combo_python=(
+declare -a use_case_python=(
   set_python
   set_dotnet_runtime
-  set_intellicode
-  set_intellicode_completions_and_api_examples
+  #set_intellicode
+  #set_intellicode_completions_and_api_examples
   set_data_science
 )
 
-declare -a combo_php=(
+declare -a use_case_php=(
   set_php
 )
 
-declare -a combo_vue=(
+declare -a use_case_vue=(
   set_vue
 )
 
-declare -a combo_mcu=(
+declare -a use_case_mcu=(
   set_cpp
   set_platformio
 )
 
-declare -a combo_haskell=(
+declare -a use_case_haskell=(
   set_haskell
 )
 
-declare -a combo_java=(
+declare -a use_case_java=(
   set_java
   set_dotnet_runtime
-  set_intellicode
+  #set_intellicode
 )
 
-declare -a combo_go=(
+declare -a use_case_go=(
   set_go
 )
 
-declare -a combo_csharp=(
+declare -a use_case_csharp=(
   set_csharp
   set_dotnet_runtime
 )
 
-declare -a combo_perl=(
+declare -a use_case_perl=(
   set_perl
 )
 
-declare -a combo_lisp=(
+declare -a use_case_lisp=(
   set_lisp
 )
 
-declare -a combo_nix=(
+declare -a use_case_nix=(
   set_nix
 )
 
-declare -a combo_prolog=(
+declare -a use_case_prolog=(
   set_prolog
 )
 
 # Associative array
-# combos=([language]=combo_* ...)
+# combos=([language]=use_case_* ...)
 
 declare -A combos=(
-  [base]=combo_base
-  [bash]=combo_bash
-  [pascal]=combo_pascal
-  [cpp]=combo_cpp
-  [frontend]=combo_web_front_end
-  [backend]=combo_web_back_end
-  [python]=combo_python
-  # [mcu]=combo_mcu
-  # [haskell]=combo_haskell
-  [java]=combo_java
-  # [go]=combo_go
-  # [perl]=combo_perl
-  # [lisp]=combo_lisp
-  # [nix]=combo_nix
-  # [prolog]=combo_prolog
-  # [php]=combo_php
-  # [vue]=combo_vue
+  [base]=use_case_base
+  [bash]=use_case_bash
+  [pascal]=use_case_pascal
+  [cpp]=use_case_cpp
+  [frontend]=use_case_web_front_end
+  [backend]=use_case_web_back_end
+  [python]=use_case_python
+  [java]=use_case_java
+  # [mcu]=use_case_mcu
+  # [haskell]=use_case_haskell
+  # [go]=use_case_go
+  # [perl]=use_case_perl
+  # [lisp]=use_case_lisp
+  # [nix]=use_case_nix
+  # [prolog]=use_case_prolog
+  # [php]=use_case_php
+  # [vue]=use_case_vue
 )
 
 return

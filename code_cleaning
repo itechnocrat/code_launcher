@@ -6,16 +6,14 @@ CODE_WORK_EXTENSIONS_DIR=$HOME_DIR/.vscode-insiders
 
 # echo $CODE_WORK_DATA_DIR
 
-if [ -d "$CODE_WORK_DATA_DIR" ]
-    then
-        rm -dr "$CODE_WORK_DATA_DIR"
-        echo "Directory $CODE_WORK_DATA_DIR deleted"
-        echo ""
+if [ -d "$CODE_WORK_DATA_DIR" ]; then
+    rm -dr "$CODE_WORK_DATA_DIR"
+    echo "Directory $CODE_WORK_DATA_DIR deleted"
+    echo ""
 fi
 
-if [ -d "$CODE_WORK_EXTENSIONS_DIR" ]
-    then
-        rm -dr $CODE_WORK_EXTENSIONS_DIR
-        echo "Directory $CODE_WORK_EXTENSIONS_DIR deleted"
-        echo ""
+if [ -d "$CODE_WORK_EXTENSIONS_DIR" ]; then
+    rm -dr $CODE_WORK_EXTENSIONS_DIR
+    echo "Directory $CODE_WORK_EXTENSIONS_DIR deleted"
+    echo ""
 fi

@@ -1,8 +1,6 @@
 #!/bin/bash
 
-#
-# license ...
-#
+set -o nounset
 
 # Usage this script:
 # code language profile
@@ -36,10 +34,10 @@
 # Example:
 # 	test -f "$_arg_infile" || _PRINT_HELP=yes die "Can't continue, have to supply file as an argument, got '$_arg_infile'" 4
 die() {
-	local _ret="${2:-1}"
-	test "${_PRINT_HELP:-no}" = yes && print_help >&2
-	echo "$1" >&2
-	exit "${_ret}"
+  local _ret="${2:-1}"
+  test "${_PRINT_HELP:-no}" = yes && print_help >&2
+  echo "$1" >&2
+  exit "${_ret}"
 }
 
 # Function that evaluates whether a value passed to it begins by a character
@@ -72,65 +70,65 @@ _arg_profile=
 # This is useful if users asks for it, or if there is an argument parsing error (unexpected / spurious arguments)
 # and it makes sense to remind the user how the script is supposed to be called.
 print_help() {
-	printf '%s\n' "<The general help message of my script>"
-	printf 'Usage: %s [-h|--help] <language> <profile>\n' "$0"
-	printf '\t%s\n' "-h, --help: Prints help"
+  printf '%s\n' "<The general help message of my script>"
+  printf 'Usage: %s [-h|--help] <language> <profile>\n' "$0"
+  printf '\t%s\n' "-h, --help: Prints help"
 }
 
 # The parsing of the command-line
 parse_commandline() {
-	_positionals_count=0
-	while test $# -gt 0; do
-		_key="$1"
-		case "$_key" in
-		# The help argurment doesn't accept a value,
-		# we expect the --help or -h, so we watch for them.
-		-h | --help)
-			print_help
-			exit 0
-			;;
-		# We support getopts-style short arguments clustering,
-		# so as -h doesn't accept value, other short options may be appended to it, so we watch for -h*.
-		# After stripping the leading -h from the argument, we have to make sure
-		# that the first character that follows coresponds to a short option.
-		-h*)
-			print_help
-			exit 0
-			;;
-		*)
-			_last_positional="$1"
-			_positionals+=("$_last_positional")
-			_positionals_count=$((_positionals_count + 1))
-			;;
-		esac
-		shift
-	done
+  _positionals_count=0
+  while test $# -gt 0; do
+    _key="$1"
+    case "$_key" in
+    # The help argurment doesn't accept a value,
+    # we expect the --help or -h, so we watch for them.
+    -h | --help)
+      print_help
+      exit 0
+      ;;
+    # We support getopts-style short arguments clustering,
+    # so as -h doesn't accept value, other short options may be appended to it, so we watch for -h*.
+    # After stripping the leading -h from the argument, we have to make sure
+    # that the first character that follows coresponds to a short option.
+    -h*)
+      print_help
+      exit 0
+      ;;
+    *)
+      _last_positional="$1"
+      _positionals+=("$_last_positional")
+      _positionals_count=$((_positionals_count + 1))
+      ;;
+    esac
+    shift
+  done
 }
 
 # Check that we receive expected amount positional arguments.
 # Return 0 if everything is OK, 1 if we have too little arguments
 # and 2 if we have too much arguments
 handle_passed_args_count() {
-	local _required_args_string="'language' and 'profile'"
-	test "${_positionals_count}" -ge 2 || _PRINT_HELP=yes die "FATAL ERROR: Not enough positional arguments - we require exactly 2 (namely: $_required_args_string), but got only ${_positionals_count}." 1
-	test "${_positionals_count}" -le 2 || _PRINT_HELP=yes die "FATAL ERROR: There were spurious positional arguments --- we expect exactly 2 (namely: $_required_args_string), but got ${_positionals_count} (the last one was: '${_last_positional}')." 1
+  local _required_args_string="'language' and 'profile'"
+  test "${_positionals_count}" -ge 2 || _PRINT_HELP=yes die "FATAL ERROR: Not enough positional arguments - we require exactly 2 (namely: $_required_args_string), but got only ${_positionals_count}." 1
+  test "${_positionals_count}" -le 2 || _PRINT_HELP=yes die "FATAL ERROR: There were spurious positional arguments --- we expect exactly 2 (namely: $_required_args_string), but got ${_positionals_count} (the last one was: '${_last_positional}')." 1
 }
 
 # Take arguments that we have received, and save them in variables of given names.
 # The 'eval' command is needed as the name of target variable is saved into another variable.
 assign_positional_args() {
-	local _positional_name _shift_for=$1
-	# We have an array of variables to which we want to save positional args values.
-	# This array is able to hold array elements as targets.
-	# As variables don't contain spaces, they may be held in space-separated string.
-	_positional_names="_arg_language _arg_profile "
+  local _positional_name _shift_for=$1
+  # We have an array of variables to which we want to save positional args values.
+  # This array is able to hold array elements as targets.
+  # As variables don't contain spaces, they may be held in space-separated string.
+  _positional_names="_arg_language _arg_profile "
 
-	shift "$_shift_for"
-	for _positional_name in ${_positional_names}; do
-		test $# -gt 0 || break
-		eval "$_positional_name=\${1}" || die "Error during argument parsing, possibly an Argbash bug." 1
-		shift
-	done
+  shift "$_shift_for"
+  for _positional_name in ${_positional_names}; do
+    test $# -gt 0 || break
+    eval "$_positional_name=\${1}" || die "Error during argument parsing, possibly an Argbash bug." 1
+    shift
+  done
 }
 
 # Now call all the functions defined above that are needed to get the job done
@@ -147,15 +145,6 @@ assign_positional_args 1 "${_positionals[@]}"
 # For example:
 # printf "Value of '%s': %s\\n" 'language' "$_arg_language"
 # printf "Value of '%s': %s\\n" 'profile' "$_arg_profile"
-
-## Text colors
-#echo -e "\033[31mThis text is red\033[0m"
-#echo -e "\033[32mThis text is green\033[0m"
-#echo -e "\033[33mThis text is yellow\033[0m"
-#echo -e "\033[34mThis text is blue\033[0m"
-#echo -e "\033[35mThis text is magenta\033[0m"
-#echo -e "\033[36mThis text is cyan\033[0m"
-## Reset color at the end with \033[0m to prevent color bleeding
 
 ## Define color variables for better readability
 RED='\033[31m'
@@ -175,23 +164,6 @@ BG_RED='\033[41m'
 BG_GREEN='\033[42m'
 BG_YELLOW='\033[43m'
 
-## Using color variables
-#echo -e "${RED}This text is red${RESET}"
-#echo -e "${GREEN}This text is green${RESET}"
-#echo -e "${YELLOW}This text is yellow${RESET}"
-#echo -e "${BLUE}This text is blue${RESET}"
-#echo -e "${MAGENTA}This text is magenta${RESET}"
-#echo -e "${CYAN}This text is cyan${RESET}"
-## You can also mix colors in a single line
-#echo -e "This is ${RED}red${RESET}, this is ${GREEN}green${RESET}, and this is ${BLUE}blue${RESET}."
-## Examples with styles
-#echo -e "${BOLD}This text is bold${RESET}"
-#echo -e "${UNDERLINE}This text is underlined${RESET}"
-#echo -e "${RED}${BOLD}This text is bold and red${RESET}"
-## Examples with background colors
-#echo -e "${BG_RED}This has a red background${RESET}"
-#echo -e "${BG_GREEN}${BLUE}Blue text on green background${RESET}"
-
 declare -i DEBUG=1
 
 WORKSPACE="."
@@ -199,12 +171,13 @@ WORKSPACE="."
 LANGUAGE="$_arg_language"
 
 if [[ "$_arg_profile" == "default" ]]; then
-	PROFILE="Default"
+  PROFILE="Default"
 else
-	PROFILE="$_arg_profile"
+  PROFILE="$_arg_profile"
 fi
 
-#TODO: Move to api
+# TODO: show all available use case (langs)
+# TODO: Move to api?
 BASE="$HOME"
 CODE_WORK_DIR="$BASE/code-insiders-data"
 CODE_WORK_DATA_DIR="$CODE_WORK_DIR/common"
@@ -217,27 +190,26 @@ source "$PATH_TO_STUFF/code_launcher_db"
 # shellcheck source=/dev/null
 source "$PATH_TO_STUFF/code_launcher_api"
 
+# If the combination not exists
 if ! exists "$LANGUAGE" combos; then
-	echo "Ooops! '$LANGUAGE' configuration does not exist!"
-	exit 1 # If the combination not exists
+  echo "Ooops! '$LANGUAGE' configuration does not exist!"
+  exit 1
 fi
 
-# TODO: show all available setups of launguage
-
-declare -la list_exts_installed
-declare -la list_exts_required_base
-declare -la list_exts_required_specific
-declare -la list_exts_required
-declare -la list_exts_uninstall
-declare -la list_exts_install
-declare -la list_exts_full_db
-declare -a run_options
+declare -la list_exts_installed=()
+declare -la list_exts_required_base=()
+declare -la list_exts_required_specific=()
+declare -la list_exts_required=() # TODO: mv to list_exts_required_all
+declare -la list_exts_uninstall=()
+declare -la list_exts_install=()
+declare -a run_options=()
+# declare -la list_exts_full_db
 
 # Main steps:
 # 0. Launch the editor
-# 1. Get a list of all installed ext's 
+# 1. Get a list of all installed ext's
 # 2. Get a list of all required bease ext's
-# 3. Get a list of required ext's for the specific combo
+# 3. Get a list of required ext's for the specific case
 # 4. Merge the base and specific lists of required exs's
 # 5. Get the difference between the installed and merged lists (uninstall list)
 # 6. Uninstall unnecessary extensions
@@ -249,22 +221,21 @@ declare -a run_options
 #run_options+=()
 code_launcher "$WORKSPACE" "$PROFILE" run_options
 
-
 get_list_exts_for "base" combos list_exts_required_base
-log list_exts_required_base "Base ext's"
+log list_exts_required_base "Basic list of extensions"
 
 if [[ "$LANGUAGE" == "base" ]]; then
-	list_exts_required=("${list_exts_required_base[@]}")
+  list_exts_required=("${list_exts_required_base[@]}")
 else
   get_list_exts_for "$LANGUAGE" combos list_exts_required_specific
-	log list_exts_required_specific "Ext's required for $LANGUAGE"
-  #merge_arrays list_exts_required_base list_exts_required_specific list_exts_required
-	list_exts_required=("${list_exts_required_base[@]}" "${list_exts_required_specific[@]}")
+  log list_exts_required_specific "Ext's required for $LANGUAGE"
+  merge_arrays list_exts_required_base list_exts_required_specific list_exts_required
+  #list_exts_required=("${list_exts_required_base[@]}" "${list_exts_required_specific[@]}")
 fi
 
 log list_exts_required "All required ext's"
 
-
+# get a list of existing extensions
 get_list_exts_installed "$PROFILE" list_exts_installed
 #number_installed_exts=$(get_length_array list_exts_installed)
 
@@ -273,29 +244,29 @@ if [[ ${#list_exts_installed[*]} -gt 0 ]]; then
 
   log list_exts_installed "Already installed ext's"
 
-	# Make unistall and install lists ext's
-  diff_lists list_exts_required list_exts_installed list_exts_install list_exts_uninstall
-    
+  # Make uninstall and install lists ext's
+  make_install_and_unistall_lists list_exts_required list_exts_installed list_exts_install list_exts_uninstall
+
   # Uninstall unnecessary extensions
   if [[ ${#list_exts_uninstall[*]} -gt 0 ]]; then
-	  log list_exts_uninstall "Ext's will be removed"
-   	echo -ne "${RED}"
-   	uninstall_extensions "$PROFILE" list_exts_uninstall
+    log list_exts_uninstall "Ext's will be removed"
+    echo -ne "${CYAN}"
+    uninstall_extensions "$PROFILE" list_exts_uninstall
     echo -ne "${RESET}"
-	else
-		echo -e "${YELLOW}"
-		echo -n "No extensions to remove"
-		echo -e "${RESET}"
-		#printf "\n"
+  else
+    echo -e "${YELLOW}"
+    echo -n "No extensions to remove"
+    echo -e "${RESET}"
+  #printf "\n"
   fi
-  
+
   echo -ne "${YELLOW}"
   update_extensions "$PROFILE"
   echo -ne "${RESET}"
-	#printf "\n"
+  #printf "\n"
 
 else
-	list_exts_install=("${list_exts_required[@]}")
+  list_exts_install=("${list_exts_required[@]}")
 fi
 
 #number_exts_to_install=$(get_length_array list_exts_install)
@@ -303,45 +274,48 @@ fi
 # Install necessary extensions
 #if [[ $number_exts_to_install -gt 0 ]]; then
 if [[ ${#list_exts_install[@]} -gt 0 ]]; then
-	log list_exts_install "Ext's will be installed"
-	echo -ne "${GREEN}"
- 	install_extensions "$PROFILE" list_exts_install
+  log list_exts_install "Ext's will be installed"
+  echo -ne "${GREEN}"
+  install_extensions "$PROFILE" list_exts_install
   echo -ne "${RESET}"
 else
-	echo -e "${YELLOW}"
-	echo -n "No extinsions to install"
+  echo -e "${YELLOW}"
+  echo -n "No extinsions to install"
   echo -ne "${RESET}"
-	printf "\n"
+  printf "\n"
 fi
 
 #expand_array_x3 combos list_exts_full_db
-#log list_exts_full_db "List of exts for the entire db" 
+#log list_exts_full_db "List of exts for the entire db"
 
 case $LANGUAGE in
 
 base)
-	echo "This is basic configuration"
-	;;
+  echo "This is basic configuration"
+  ;;
 
 bash)
   echo "Are you ready to write shell scripts. Enjoy!"
-	;;
+  ;;
 
 jsts)
-  export NODE_ENV=production
-  export BABEL_ENV=production
-  export NODE_ENV=development
-  export BABEL_ENV=development
-  export ESLINT_NO_DEV_ERRORS=true
-  export DISABLE_ESLINT_PLUGIN=true
-  echo "Are you ready to write js and ts scripts. Enjoy!"
-	;;
+  # export NODE_ENV=production
+  # export BABEL_ENV=production
+  # export NODE_ENV=development
+  # export BABEL_ENV=development
+  # export ESLINT_NO_DEV_ERRORS=true
+  # export DISABLE_ESLINT_PLUGIN=true
+  # echo "Are you ready to write js and ts scripts. Enjoy!"
+  ;;
 
 *)
-	echo "All right!"
-	;;
+  echo "All right!"
+  ;;
 
 esac
+
+# run_options=()
+# code_launcher "$WORKSPACE" "$PROFILE" run_options
 
 exit
 
